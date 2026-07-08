@@ -17,7 +17,7 @@ This system is registered and protected under the **Indian Copyright Office**:
 * **Project Reference ID:** `ANC-031` (PulseTech Framework)
 * **Registration Title:** *PulseTech Source Code & Dataset Validation Framework*
 * **Primary Developer / Concept Designer:** Amey Telkar
-* **Institutional Faculty Mentors:** Prof. Akshay Javalgikar, Prof. Nitin Madanwale
+* **Institutional Faculty Mentors:** Prof. Akshay Javalgikar, Prof. Nitin Madanwale, Prof. Darshan Ruikar, Dr. Preethi Baligar
 
 All source code, custom schemas, pipeline structures, and processed datasets in this repository are protected by international copyright laws. Use or citation of these materials must credit the authors and reference the official registration document: `PulseTech_ANC031_SourceCode_Copyright_20260603.pdf`.
 
@@ -112,5 +112,5 @@ Trains and evaluates XGBoost **exclusively** on reports with genuinely observed 
 
 * `dataset/46 columns Model/` – Full analytical feature files with 46 variables.
 * `dataset/15 Columns Leakage/` – Training files containing the leaky `severity_score` feature.
-* `dataset/14 Columns Model/` – **Primary Predictive Model Data** (leakage-free 13-feature + target outcome format).
+* `dataset/14 Columns Model/` – **Primary Predictive Model Data** (leakage-free 13-feature + target outcome format), including the `train_ml_model_14columns.py` model training script.
 * `README.md` – Project documentation.
