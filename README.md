@@ -112,5 +112,5 @@ Trains and evaluates XGBoost **exclusively** on reports with genuinely observed 
 
 * `dataset/46 columns Model/` – Full analytical feature files with 46 variables.
 * `dataset/15 Columns Leakage/` – Training files containing the leaky `severity_score` feature.
-* `dataset/14 Columns Model/` – **Primary Predictive Model Data** (leakage-free 13-feature + target outcome format), including the `train_ml_model_14columns.py` model training script.
+* `dataset/14 Columns Model/` – **Primary Predictive Model Data** (leakage-free 13-feature + target outcome format), including 4 separate cohort-specific model training scripts (`train_obesity_all14.py`, `train_obesity_selected4.py`, `train_diabetics_all10.py`, `train_diabetics_selected4.py`).
 * `README.md` – Project documentation.
