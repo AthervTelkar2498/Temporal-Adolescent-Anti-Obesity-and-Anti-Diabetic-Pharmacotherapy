@@ -34,8 +34,13 @@ if HAS_GNN:
     torch.manual_seed(42)
 
 # ============================================================
-# Feature & Target Columns
+# File configuration
 # ============================================================
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATASET_NAME = "Diabetics Selected 4 Drugs"
+FILE_NAME    = "Diabetics_Selected4Drgs_Adolescent_14Columns_Imputed.xlsx"
+FILE_PATH    = os.path.join(SCRIPT_DIR, FILE_NAME)
+
 # 13 features (severity_score removed to prevent target leakage)
 FEATURE_COLS = [
     'age_years', 'sex', 'weight_kg', 'drug_seq', 'route', 'role_cod',
@@ -53,9 +58,15 @@ CATEGORICAL_COLS = [
 # ============================================================
 # 1. Load & Preprocess
 # ============================================================
-def load_and_preprocess(file_path):
-    print(f"\nLoading dataset from: {file_path}")
-    df = pd.read_excel(file_path)
+def load_and_preprocess():
+    if not os.path.exists(FILE_PATH):
+        raise FileNotFoundError(
+            f"Dataset not found at: {FILE_PATH}\n"
+            "Please ensure the Excel file is in the same directory as this script."
+        )
+
+    print(f"Loading dataset from: {FILE_PATH}")
+    df = pd.read_excel(FILE_PATH)
     print(f"Loaded {len(df)} records x {len(df.columns)} columns.")
 
     # Validation check
@@ -102,7 +113,7 @@ def load_and_preprocess(file_path):
 # ============================================================
 def train_tabular(X_scaled, y, label_encoder):
     print("\n" + "=" * 60)
-    print("TABULAR MODEL TRAINING (Leakage-Free 13 Features)")
+    print(f"TABULAR MODEL TRAINING ({DATASET_NAME} — 13 Features)")
     print("=" * 60)
 
     unique_y, counts_y = np.unique(y, return_counts=True)
@@ -158,7 +169,7 @@ def train_gnn_model(df, X_encoded, y, label_encoder):
         return None, None
 
     print("\n" + "=" * 60)
-    print("GNN MODEL TRAINING (HANConv)")
+    print(f"GNN MODEL TRAINING (HANConv - {DATASET_NAME})")
     print("=" * 60)
 
     df_reset    = df.reset_index(drop=True)
@@ -269,47 +280,13 @@ def train_gnn_model(df, X_encoded, y, label_encoder):
     print(f"HANConv GNN — Best Accuracy: {best_test_acc:.4f}   Best Macro-F1: {best_test_f1:.4f}")
     return best_test_acc, best_test_f1
 
-# ============================================================
-# Main Execution Loop
-# ============================================================
 if __name__ == "__main__":
-    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-    
-    # Auto-detect all 14-column datasets in the directory
-    excel_files = [f for f in os.listdir(SCRIPT_DIR) if f.endswith('14Columns_Imputed.xlsx')]
-    
-    if not excel_files:
-        print("No datasets ending in '14Columns_Imputed.xlsx' found in this directory!")
-        sys.exit(1)
-        
-    print("=" * 60)
-    print("Adolescent Pharmacotherapy ML Pipeline — 13-Feature Leakage-Free Models")
-    print("=" * 60)
-    
-    for idx, f_name in enumerate(excel_files):
-        print(f"[{idx}] {f_name}")
-        
-    print("-" * 60)
-    # Default to train on ObesityAll_14_Drugs_Adolescent_14Columns_Imputed.xlsx if present, else first file
-    default_idx = 0
-    for idx, f_name in enumerate(excel_files):
-        if "ObesityAll" in f_name:
-            default_idx = idx
-            break
-            
-    print(f"Running training on default dataset: {excel_files[default_idx]}")
-    target_file = os.path.join(SCRIPT_DIR, excel_files[default_idx])
-    
-    X_scaled, X, y, le_y, df = load_and_preprocess(target_file)
-    
-    # Train Tabular Models
+    X_scaled, X, y, le_y, df = load_and_preprocess()
     acc_rf, f1_rf, acc_xgb, f1_xgb = train_tabular(X_scaled, y, le_y)
-    
-    # Train Graph Model
     acc_gnn, f1_gnn = train_gnn_model(df, X_scaled, y, le_y)
     
     print("\n" + "=" * 60)
-    print("SUMMARY OF RESULTS")
+    print("RESULTS SUMMARY")
     print("=" * 60)
     print(f"Random Forest — Accuracy: {acc_rf*100:.2f}% | Macro-F1: {f1_rf:.4f}")
     print(f"XGBoost       — Accuracy: {acc_xgb*100:.2f}% | Macro-F1: {f1_xgb:.4f}")
