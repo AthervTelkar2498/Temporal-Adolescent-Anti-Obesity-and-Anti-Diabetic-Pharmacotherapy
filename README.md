@@ -1,4 +1,4 @@
-# <p align="center"><span style="color:#0A3A70">Adolescent Anti-Obesity & Anti-Diabetic Pharmacotherapy Framework</span></p>
+# <p align="center"><span style="color:#0A3A70">Temporal generalisability and pseudo-label leakage in machine learning classification of reported outcomes among adolescents receiving obesity-related and diabetes-related pharmacotherapy: a FAERS study</span></p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
@@ -110,7 +110,8 @@ Trains and evaluates XGBoost **exclusively** on reports with genuinely observed 
 
 ## 📁 <span style="color:#0A3A70">Repository Structure</span>
 
-* `dataset/46 columns Model/` – Full analytical feature files with 46 variables.
+* `dataset/14 Columns Model/` – **Primary Predictive Model Data** (leakage-free 13-feature + target outcome format), including separate cohort-specific model training scripts.
 * `dataset/15 Columns Leakage/` – Training files containing the leaky `severity_score` feature.
-* `dataset/14 Columns Model/` – **Primary Predictive Model Data** (leakage-free 13-feature + target outcome format), including 4 separate cohort-specific model training scripts (`train_obesity_all14.py`, `train_obesity_selected4.py`, `train_diabetics_all10.py`, `train_diabetics_selected4.py`).
+* `dataset/15 Columns Model with Source Quarter/` – Model datasets including the source quarter tracking.
+* `dataset/16 Columns Leakage with Source Quarter/` – Leakage datasets including the source quarter tracking.
 * `README.md` – Project documentation.

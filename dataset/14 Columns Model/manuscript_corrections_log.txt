@@ -1,0 +1,241 @@
+================================================================================
+MANUSCRIPT CORRECTIONS AND Q&A RESOLUTIONS REGISTER (CHRONOLOGICAL)
+Project: Adolescent ADR Outcome Severity Prediction in FAERS Reports
+Target Manuscript File: XGBOOST.tex
+Date Range Covered: Tuesday, July 7, 2026 – Friday, July 10, 2026
+================================================================================
+
+This register logs every query, concern, and question raised by review/supervision ("sir's comments") chronologically from July 7th to July 10th, along with the detailed scientific explanation and corresponding file solutions implemented.
+
+--------------------------------------------------------------------------------
+TUESDAY, JULY 7, 2026
+--------------------------------------------------------------------------------
+
+1. TOPIC: Target Leakage and Severity Score Removal
+   * User Query: "how to improve accuracy if we remove severity score from input as we will keep only outc code as label..."
+   * Context: The model originally achieved ~95% accuracy because it included `severity_score` (a feature directly calculated from the outcome categories) and `is_fatal`/`is_serious` as predictors. This introduced severe target leakage.
+   * Explanation: Removing `severity_score` is essential to prevent target leakage and ensure prospective clinical usability. While this drops the accuracy to a realistic 76.98%, it represents genuine predictive power rather than a statistical illusion.
+   * Solution: Removed `severity_score`, `outc_cod`, and `is_fatal` from the feature sets in the training pipelines. Re-evaluated models on the clean 14-column clinical feature set.
+
+2. TOPIC: Communication of Accuracy Drop to Supervision
+   * User Query: "my sir is asking this give me information what to tell Confirmed and now quantified..."
+   * Explanation: Provided a professional explanation for the supervisor: The 94% accuracy model was built on target-leaking features. A zero-leakage model built strictly on pre-adjudication clinical parameters (demographics, active dosage, drug sequence, preferred terms) yields 76.98% blended accuracy (and 58.77%–65.96% observed-only range). This is the mathematically honest performance that can actually be deployed on incoming FAERS reports.
+   * Solution: Incorporated this leakage quantification and honest reporting throughout the text.
+
+3. TOPIC: Document-wide Accuracy Updates
+   * User Query: "have you updated accuracy in latex paper from starting to end of paper ?"
+   * Solution: Conducted a full sweep of XGBOOST.tex. Updated all instances of performance statistics in the Abstract, Results, Discussion, and Key Quantitative Finding sections to match the new leakage-free 14-column results.
+
+4. TOPIC: Table Feature Specifiers (14 vs. 15 columns)
+   * User Query: "here 14 cols with come na without severity .only outc as label in table and check each..."
+   - Solution: Updated table captions and headers to explicitly clarify that the primary models are evaluated on the 14-column clean dataset with `outc_cod` as the multiclass classification target.
+
+5. TOPIC: Seed 42 Random Splits
+   * User Query: "what is 42 single seed variance in our paper ?what it contain do we have used and what accuracy we got if we used that seeds?"
+   * Explanation: Seed 42 is the fixed random seed used for the primary 80/20 train/test split. It guarantees that training (9,360 cases) and testing (2,341 cases) partitions are identical across Random Forest, XGBoost, and GNN runs. Listed the exact seed-specific split sizes and accuracies in the text for replication.
+
+6. TOPIC: TikZ Diagram Consistency
+   * User Query: "check thid diagram is correct based on the actual values of now what we done ?"
+   * Solution: Audited Figure 2 (Pipeline Flow) and Figure 3 (Decision Tree) TikZ nodes. Updated all printed accuracies, splits, and class log-odds outputs to align with the active 14-column model metrics.
+
+7. TOPIC: Target Leakage Note in Tables
+   * User Query: "can you put note to severity score column is removed so just for compariosn side by side..."
+   * Solution: Added footnotes to the baseline and model evaluation tables explicitly noting that `severity_score` was excluded to ensure a leakage-free classification design.
+
+8. TOPIC: Adolescent Age Band Definition
+   * User Query: "as we are doing on age 12-17 adolecences so please can you check this 1. Where does the E11(R1) adolescent cohort definition appear? 2. How are the four cohorts constructed?"
+   * Explanation: Showed where the pipeline code filters by age (12–17 years) according to ICH E11(R1) guidance.
+   * Solution: Added explicit reminders in table headers stating "Adolescent Cohort (12-17 Years)" to prevent confusion.
+
+9. TOPIC: Table 14 Margins and Page Overflow
+   * User Query: "and check table 14 is overlapping make proper ?"
+   * Solution: Redesigned the LaTeX table structure using column width specifiers, shrinking row padding, and reducing font sizes to fit within the twocolumn column width constraints.
+
+10. TOPIC: Acknowledgements Cleaning
+    * User Query: "just remove the names like rushikesh ,abhishek ! i mean others sir names like Akashy sir,Nitin sir?"
+    * Solution: Updated the Title Page and Acknowledgements sections to remove the specified names and preserve the requested supervision roles.
+
+--------------------------------------------------------------------------------
+WEDNESDAY, JULY 8, 2026
+--------------------------------------------------------------------------------
+
+11. TOPIC: Equation 2 Severity Proxy Function Definition
+    * User Query: "page 11 properly define function f() Eq. 2 reads severity_proxy_i = f(is_fatal_i, hosp...)"
+    * Solution: Re-defined the function `f()` mathematically in the Methodology section as a linear weighted sum of categorical indicators.
+
+12. TOPIC: 15-Column Leakage Reference
+    * User Query: "mentioned 15 columns with leakaage please instead of 14 col?"
+    * Solution: Updated the target-leakage ablation text to state that the leakage-prone baseline used 15 columns (14 clean columns + 1 leaky severity score column).
+
+13. TOPIC: GNN Discrepancy (59% original vs. 78% reproduction)
+    * User Query: "...is this based on 6 class with 14 column no leakage as before you have given me when we trained 59% something how HANCONV got change..."
+    * Explanation: The original GNN script omitted feature scaling (StandardScaler). In GNN message-passing, unscaled continuous inputs (e.g. age [12-17] vs. weight [100+ kg]) caused gradient vanishing/explosion, capping accuracy at 59.89%. Standardizing continuous inputs normalized node feature magnitudes, enabling the GNN to converge to 78.47% (single seed 79.15%).
+    * Solution: Documented this controlled scale ablation and updated the GNN results text accordingly.
+
+14. TOPIC: Feature Scaling Impact on Decision Trees vs. GNNs
+    * User Query: "then on single seed if HANCONV can increase Accuracy then why not XGBOOST, and RF ?"
+    * Explanation: Decision tree algorithms (XGBoost/RF) determine splits based on ordering (ordinal thresholding), which is invariant to monotonic transformations like scaling. GNNs are neural networks optimized via gradient descent; they require normalized inputs to prevent scaling mismatches in node embedding matrix multiplication.
+
+15. TOPIC: Percentage Rounding in Text vs. Tables
+    * User Query: "now you said 76.98 it must com na in table why 77? in my latex code ?"
+    * Solution: Replaced all rounded approximations (77%) with the exact decimal figure (76.98%) across all text paragraphs to preserve absolute consistency.
+
+16. TOPIC: 76.98% vs. 63.78% observed-only validation
+    * User Query: "why 63.78 accuracy as we got 76.98 accuracy na ? 1. The 76.98% Accuracy (The Full Dataset) bro meanse only on adolosence na 12 to 17?"
+    * Explanation: Both datasets are restricted to the 12-17 adolescent band. However, the full dataset (76.98% accuracy) contains resolved imputed labels. The 63.78% accuracy represents a complete-case anchor, where the model was trained and evaluated strictly on reports with genuinely observed outcome codes (no imputation) to verify that the clinical features hold predictive power without any imputed labels.
+    * Solution: Added a complete-case baseline section and annotated table titles accordingly.
+
+17. TOPIC: 100% (1.000) Metric Value for Random Forest in Table 18
+    * User Query: "how 100 accuracy yer we got 88.68 using 15 cols leakage for random forest na in table 13 then why in table 18 random forst is 100 %?"
+    * Explanation: Table 18 displays per-class metrics, not overall model accuracy. The 1.000 value is for the RI (Required Intervention) class, which has a test support of exactly 1. Random Forest correctly classified this single test report, leading to a precision, recall, and F1 of 1.000. It is a class-specific result, not an overall model accuracy.
+
+--------------------------------------------------------------------------------
+THURSDAY, JULY 9, 2026
+--------------------------------------------------------------------------------
+
+18. TOPIC: Table-by-Table Auditing
+    * User Query: "check every tables starting 1 to last all in journal paper is updated ?"
+    * Solution: Audited Tables 1 to 20 in the manuscript for consistency with the new leakage-free numbers and baseline statistics.
+
+19. TOPIC: Section ?? Compiler Warnings
+    * User Query: "the note for sevirity as * in that text there why section ?? is written ?"
+    * Solution: Resolved by adding `\label{sec:ablation}` in the dimensionality ablation subsection, allowing cross-references to compile properly to Section 5.7.
+
+20. TOPIC: Equation Margin Layout Overlap
+    * User Query: "check this image the text is overlapping for this severity_proxyi = 7 · is_fatali +6 · life_threati..."
+    * Solution: Wrapped the long equation in a LaTeX `split` block inside the equation environment.
+
+21. TOPIC: Abstract and Results Narrative Shift (XGBoost vs. GNN)
+    * User Query: "...we dont need to tell HANCONV is best but its fails on f1 micro so XGBOSST is best on accuracy with f1 maintained ? ... as HANCONV have 79% accuracy so its seems disturbing my paper..."
+    * Explanation: GNN's 79.15% raw accuracy is misleading because it collapses to majority-class prediction bias (OT class), yielding an extremely low Macro-F1 (37.33%). XGBoost achieves a far superior clinically balanced result (Macro-F1 of 62.50%).
+    * Solution: Reframed the narrative in 7 key locations to put XGBoost first, explaining GNN's accuracy as a majority-class artifact.
+
+--------------------------------------------------------------------------------
+FRIDAY, JULY 10, 2026 (TODAY)
+--------------------------------------------------------------------------------
+
+22. TOPIC: Section Numbering Mismatches
+    * User Query: "Section numbering in your report doesn't match the actual file — twice. You cite the fix as being in 'Section 5.3.' In the actual document, Practical Implications is Section 6.4..."
+    * Solution: Verified the compiled structure. Confirmed that LaTeX internal indices are correct and resolve compile-correctly (Practical Implications is Section 6.4, Key Quantitative Finding is Section 7.2).
+
+23. TOPIC: Figure 2 observed-only range inconsistency
+    * User Query: "Figure 2's diagram text (Section 3.3) still reads: 'XGBoost Classifier: Blended accuracy of 76.98% (observed-only: 65.34%)'... Either update the diagram to the range or explicitly label it as 'Obesity All example'..."
+    * Solution: Updated Figure 2's TikZ code to show the cross-cohort range (58.77%–65.96%) and explicitly labeled the 76.98% as the Obesity All cohort example.
+
+24. TOPIC: Traceability of Section 6.4 majority baseline improvement
+    * User Query: "Neither of these two fixes touches the more substantive item... the '5.1% to 6.3% improvement over majority-class baseline' claim in Section 6.4. That number doesn't reconcile against the paper's own data..."
+    * Explanation: Calculating actual baseline improvements showed +5.74pp for Obesity All, +2.20pp for Obesity Selected 4, and diabetes baseline details were not reported. The "5.1% to 6.3%" range was untraceable.
+    * Solution: Replaced the range with a concrete, traceable statement: "+5.7 percentage points for Obesity All, where the OT class comprises 59.6% of reports per Table 3; per-cohort baselines for the diabetes sub-cohorts are not separately reported."
+
+25. TOPIC: Complete-Case Accuracy Range Reporting (Flaw 7)
+    * Context: Reviewer requested reporting the complete-case accuracy range (50.00%–63.78%) right next to the post-imputation observed-only range (58.77%–65.96%).
+    * Solution: Updated the Structured Abstract, Table 1 (Proposed Framework), Table 2 (Systematic Review), Figure 2 (TikZ diagram), Section 6.4 (Practical Implications), and Section 7.2 (Key Quantitative Finding / Conclusion) to present the complete-case and observed-only accuracy ranges side-by-side.
+
+26. TOPIC: Downgrading Low-Sample GNN Claim Confidence (Flaw 8)
+    * Context: The claim that the HANConv GNN outperformed tabular models on the smallest cohort (Diabetes Selected 4, N=342) was overly confident given that GNN was trained with unweighted cross-entropy loss, while tabular models utilized default class weighting.
+    * Solution: Downgraded all mentions of GNN's low-sample outperformance to "preliminary" and added explicit caveats about the asymmetric class-imbalance loss weighting parameters in the Structured Abstract, Section 5.11 (Robustness Analysis), and Section 7.2 (Conclusion).
+
+27. TOPIC: Softening FAIR/Repository Claim-Reality Gap (Flaw 9)
+    * Context: The manuscript claimed the pipeline "operationalised FAIR data principles", but the source code is currently private (scheduled for release post-acceptance).
+    * Solution: Softened the statement in Section 2 to state that the pipeline "aligns with" FAIR principles and noted the post-acceptance release of the public repository.
+
+28. TOPIC: Bibliography & Citation Alignment (Lazarou 1998 & Phan 2023)
+    * Context: Lazarou 1998 (hospitalized ADR mortality paper) was incorrectly cited in the text for "psychiatric AE signals for respiratory drugs" and "FAERS deduplication methodology". Separately, Table 2 referenced "Misu et al. (2023)" but the bibliography entry for misu2023 listed Phan M et al. as the first author.
+    * Solution:
+      1. Relocated lazarou1998 in the Introduction to cite it correctly for hospitalized patient ADR mortality.
+      2. Replaced the misaligned lazarou1998 citation in Related Work with resp2026 (Feng & Zhao 2026), which is the correct pediatric respiratory psychiatric FAERS paper.
+      3. Replaced the misaligned lazarou1998 citation in the Deduplication section with misu2023 (Phan et al. 2023), which is a standard pediatric FAERS study.
+      4. Corrected "Misu et al. (2023)" in Table 2 to "Phan et al. (2023)" to match the bibliography entry.
+
+29. TOPIC: ROR Foundation Citation (Rothman 2004)
+    * Context: The foundational ROR paper (rothman2004) was listed in the bibliography but not cited in the text of the manuscript.
+    * Solution: Added the citation to rothman2004 alongside vanpuijenbroek2002 in Section 2.1.1 (L235) where the Reporting Odds Ratio (ROR) is first introduced.
+
+30. TOPIC: MedDRA Reference Citation (meddra2023)
+    * Context: The MedDRA reference (meddra2023) was listed in the bibliography but not cited in the text of the manuscript.
+    * Solution: Added the citation to meddra2023 at the first mention of MedDRA Preferred Terms in Section 3 (L345).
+
+================================================================================
+SECTION B: PEER-REVIEW SUGGESTIONS AND INTEGRATED SOLUTIONS (FLAWS 1-9)
+================================================================================
+
+This section details each of the 9 flaws/questions raised during the peer-review audit, the scientific context of the issue, the exact steps taken to resolve it, and how the changes were integrated into the manuscript (XGBOOST.tex).
+
+--------------------------------------------------------------------------------
+TIER 1: TEXT-ONLY RECONCILIATIONS (FLAWS 1–6)
+--------------------------------------------------------------------------------
+
+1. FLAW 1: Evaluation Protocol Contradiction (5-Fold CV vs. 80/20 Holdout Split)
+   * Reviewer's Question/Concern: The manuscript contained a contradiction in the described evaluation protocol. Figure 2's TikZ diagram referenced "strictly on train folds --- zero cross-fold data contamination" implying K-fold cross-validation, while Section 4.7 and Section 5.11 explicitly described a single stratified 80/20 train/test holdout split.
+   * Step-by-Step Solution:
+     1. Located Figure 2 TikZ diagram source code in XGBOOST.tex (lines 603-608).
+     2. Replaced K-fold/cross-fold references with holdout split terminology: "strictly on train split --- zero train/test data contamination".
+     3. Located GNN cohort discussion in Section 6.2 (line 1734) and changed "test fold" to "test split" to align the terminology.
+     4. Verified that all other sections (Abstract, Section 5.8, Section 6.4, Section 7.2) consistently refer to the "stratified 80/20 holdout split" with primary seed 42.
+
+2. FLAW 2: Column Nomenclature Standardization ("14 columns" vs. "13 features" vs. "15 columns")
+   * Reviewer's Question/Concern: The text was inconsistent in referring to column and feature counts. It referenced "14 columns (excluding severity_score)", "15 columns", and "13 clinical features" in a confusing manner.
+   * Explanation: The cleaned cohort dataset contains 15 core clinical columns (which includes 1 target label 'outc_cod' and 1 target-leakage column 'severity_score' which is discarded before training). Thus:
+     - The raw cleaned schema contains 15 core clinical columns.
+     - The leakage-prone column (severity_score) and target label (outc_cod) are excluded to yield 13 active features.
+     - The model's predictive dataset contains 14 columns (13 features + 1 target outcome).
+   * Step-by-Step Solution:
+     1. Swept XGBOOST.tex for all feature and column count descriptions.
+     2. Standardized the text in the Conclusion to read: "14-column leakage-free clinical dataset (comprising 13 clinical features and 1 target label)".
+     3. Updated Figure 2 caption, Table 1 footnote, Table 2 description, and Section 6.4 to explicitly distinguish between the 15 columns in the database, the 13 clinical features used in training, and the 14-column predictive dataset.
+
+3. FLAW 3: Imputation Mapping Completeness and CA Omission
+   * Reviewer's Question/Concern: The two-stage imputation pipeline was described as a "bijection" that resolves "approximately 100%" of outcome missingness. However, the imputation rule is a lookup mapping (modal outcome based on historical reaction term), not a bijection. Additionally, Congenital Anomaly (CA) was omitted from the lookup rules because no adverse event had CA as its modal outcome, meaning the lookup rule resolved only 95.09% of cases (with 4.91% falling back to Stage 2).
+   * Step-by-Step Solution:
+     1. Replaced the word "bijection" in Section 4.3 with "many-to-one deterministic lookup mapping" to ensure mathematical rigour.
+     2. Added an inline footnote to Table 3 (Imputation Table) explaining the omission of CA: since no MedDRA Preferred Term had CA as its modal outcome in the training data, Stage 1 resolved 95.09% of cases, and the remaining 4.91% fell back to the Stage 2 clinical severity rule (where CA is correctly handled as a high-severity fallback).
+
+4. FLAW 4: Dimensionality Ablation Accuracy Drop (pt_term Removal)
+   * Reviewer's Question/Concern: The ablation study showed a sharp 11-percentage-point drop in accuracy when moving from the 46-column analytical set to the 32-column configuration, but the manuscript failed to explain the cause.
+   * Explanation: The 32-column configuration drops the high-cardinality reaction preferred term (pt_term) to test the predictive power of demographics and drug exposures alone.
+   * Step-by-Step Solution:
+     1. Updated Section 5.10 (Ablation study) in XGBOOST.tex to explicitly describe the cause: pt_term acts as a vital proxy for clinical pathology. Dropping it causes a sharp 11-point drop in accuracy, demonstrating that reaction terms carry the primary predictive signal, which is stabilized downstream by clinical fallback imputation.
+
+5. FLAW 5: Table Footnote for Low-Support Categories (RI/DS)
+   * Reviewer's Question/Concern: Table 18 (now Table 14: tab:per_class_metrics) reported precision, recall, and F1-score for classes with very low support (e.g. RI had support=1, DS had support=1 in Diabetes Selected 4). Evaluating model comparisons on classes with test support < 5 is statistically unreliable and represents descriptive noise.
+   * Step-by-Step Solution:
+     1. Added a clear footnote to Table 14 (tab:per_class_metrics) caption: "*Note: Per-class metrics for classes with test support < 5 (RI, DS) are reported for completeness but should be interpreted descriptively only; they are not statistically reliable comparators between models."
+     2. Adjusted the prose in Section 5.11.2 to frame RI and DS metrics strictly as descriptive observations, rather than asserting generalizable comparative superiority.
+
+6. FLAW 6: Systematic Review Table Softening (Table 2 / tab:sysrev)
+   * Reviewer's Question/Concern: The systematic review table (Table 2) showed checkmarks for "This Study" across all five evaluation criteria. Since the criteria were selected by the authors based on gaps they sought to fill, the checkmark table is self-referential and visually oversells the novelty.
+   * Step-by-Step Solution:
+     1. Kept the prose caveat in Section 2.2 stating that the comparative scoring represents literature coverage rather than an independent benchmark.
+     2. Softened the table caption by adding an inline footnote to Table 2: "*Note: The five comparison criteria are defined based on target research gaps, meaning that scoring reflects comparative coverage rather than independent external benchmarks."
+     3. Re-labeled the table row from "This Study" to "This Study (Proposed)" to mark its positioning clearly.
+
+--------------------------------------------------------------------------------
+TIER 2: DATA-CHECK CONCORDANCE (FLAW 7)
+--------------------------------------------------------------------------------
+
+7. FLAW 7: Side-by-Side Reporting of Complete-Case and Observed-Only Ranges
+   * Reviewer's Question/Concern: The abstract cited only the observed-only accuracy range (58.77%–65.96%) and blended accuracy (76.98%), ignoring the complete-case retrained accuracy range (50.00%–63.78%), which represents the strict "zero-circularity" benchmark. These two metrics represent different quantities and diverge significantly on the smallest cohort.
+   * Step-by-Step Solution:
+     1. Updated the Structured Abstract (Results) to state: "observed-label accuracy of 58.77%–65.96% and complete-case retrained accuracy of 50.00%–63.78%".
+     2. Updated Section 6.4 (Practical Implications) to present both ranges side-by-side: "observed-label accuracy range of 58.77%–65.96% and a complete-case accuracy range of 50.00%–63.78%".
+     3. Updated Figure 2 (TikZ diagram text) to display: "observed-only range: 58.77%--65.96%, complete-case range: 50.00%--63.78%".
+     4. Updated Section 7.2 (Conclusion), Table 1 (Proposed Framework), and Table 2 (Systematic Review) to present both observed-only and complete-case ranges side-by-side.
+     5. Added a reconciling sentence explaining that the 16-point drop for Diabetes Selected 4 (65.96% observed-only vs 50.00% complete-case) is a low-sample artifact (N=226 complete cases, test set size N_test=45, with very high sensitivity to single-sample shifts).
+
+--------------------------------------------------------------------------------
+TIER 3: CRITICAL BOUNDARY CONDITION DISCLOSURES (FLAWS 8–9)
+--------------------------------------------------------------------------------
+
+8. FLAW 8: Downgrading GNN Small-Cohort Claims & Loss Caveat
+   * Reviewer's Question/Concern: The claim that the HANConv GNN outperformed tabular models on the smallest cohort (Diabetes Selected 4) was presented as a confident architectural recommendation. However, this comparison was confounded because the GNN was trained with unweighted cross-entropy loss (no class-weight balancing) whereas the tabular models utilized default class weighting. The GNN's advantage in the low-sample regime is therefore a preliminary finding.
+   * Step-by-Step Solution:
+     1. Downgraded the confidence of the low-sample GNN outperformance claim across all sections (Abstract, Section 5.11, Section 6.2, Discussion, and Conclusion) from a generalizable architectural recommendation to a "preliminary finding".
+     2. Appended the class-weighting asymmetry caveat directly adjacent to all outperformance claims. For example, in Section 6.2: "However, this comparative advantage remains a preliminary finding, because GNN models were trained using unweighted cross-entropy loss while tabular baselines utilize default class weights..."
+     3. Updated the Conclusion to state: "establishing a preliminary sample-size boundary for architectural recommendations that remains qualified by asymmetric class-imbalance tuning between models."
+
+9. FLAW 9: Softening Repository Release & FAIR Data Principles
+   * Reviewer's Question/Concern: The paper claimed that the data/code pipeline "operationalised FAIR data principles", but the source code repository is currently private (scheduled for release on Zenodo upon acceptance). This created a claim/reality gap.
+   * Step-by-Step Solution:
+     1. Softened the text in Section 2 (Systematic Review, L267) to state that the pipeline "aligns with FAIR data principles to support pharmacovigilance research reproducibility (with complete source code scheduled for public release upon acceptance)".
+     2. Maintained the Data Availability section statement explaining that raw files are public, and complete feature-engineering, cohort-construction, and model weights will be released with a Zenodo-archived DOI upon journal acceptance.
+================================================================================
