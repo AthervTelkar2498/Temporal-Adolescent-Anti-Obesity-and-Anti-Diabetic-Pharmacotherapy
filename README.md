@@ -90,13 +90,14 @@ Decomposes test-set performance by label source to verify that imputation does n
 | **Diabetes All** ($N=5{,}208$) | **69.48%** | **58.77%** ($n=587$) | 81.97% ($n=355$) | 88.00% ($n=100$) |
 | **Diabetes Selected 4** ($N=342$) | **66.67%** | **65.96%** ($n=47$) | 28.57% ($n=7$) | 86.67% ($n=15$) |
 
-### 2. Feature Ablation (Leave-`pt_term`-Out)
-Quantifies the exact accuracy contribution ($\Delta$) of the adverse event type (`pt_term`):
+### 2. Leakage Quantification (5-Fold CV, XGBoost)
+Directly quantifies the inflation caused by `pt_term`-to-outcome mapping when constructed on the full dataset versus strictly within each training fold:
 
-* **Obesity All:** 14-Col (76.98%) vs 13-Col (64.25%) $\implies \Delta = -12.73\%$
-* **Obesity Selected 4:** 14-Col (76.79%) vs 13-Col (64.22%) $\implies \Delta = -12.56\%$
-* **Diabetes All:** 14-Col (69.48%) vs 13-Col (58.35%) $\implies \Delta = -11.13\%$
-* **Diabetes Selected 4:** 14-Col (66.67%) vs 13-Col (63.77%) $\implies \Delta = -2.90\%$
+| Approach | Mean Acc | Std Acc | Mean F1 | Std F1 |
+|---|---|---|---|---|
+| **Full-Dataset Mapping** | 0.7531 | 0.0077 | 0.4963 | 0.0610 |
+| **Fold-Internal Mapping** | 0.4633 | 0.0105 | 0.1792 | 0.0063 |
+| **Leakage Inflation** | **+0.2898** | --- | **+0.3171** | --- |
 
 ### 3. Complete-Case-Only Anchor (Zero Imputation Circularity)
 Trains and evaluates XGBoost **exclusively** on reports with genuinely observed outcome labels (no imputed data):
