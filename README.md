@@ -1,4 +1,4 @@
-# <p align="center"><span style="color:#0A3A70">Temporal generalisability and pseudo-label leakage in machine learning classification of reported outcomes among adolescents receiving obesity-related and diabetes-related pharmacotherapy: a FAERS study</span></p>
+# <p align="center"><span style="color:#0A3A70">Machine learning as a pharmacovigilance triage tool for serious adverse events in adolescents: A leakage-aware FAERS study</span></p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
@@ -47,40 +47,33 @@ RAW FAERS ASCII FILES (7 × .txt)
    [Step 13: Human-in-the-Loop Approve/Reject Quality Gate] ──► PostgreSQL DB
 ```
 
-1. **Step 0: Ingestion & Auto-Detection** – Parses quarterly files and dynamically determines columns.
-2. **Step 1: Column Dropping** – Removes high-null fields (e.g. `drug_rec_act` >99% null).
-3. **Step 2: Deduplication** – Resolves duplicate case files by prioritizing latest `caseversion` and follow-up reports.
-4. **Step 3: Age Conversion** – Standardizes all age records into decimal years.
-5. **Step 4: ICH E11 Stratification** – Stratifies cohorts into Neonate, Infant, Child, and Adolescent bands.
-6. **Step 5: Weight Conversion** – Standardizes weight values to kilograms.
-7. **Step 6: Pediatric Extraction** – Filters reports down to pediatric ranges (under 18).
-8. **Step 7: Date Standardization** – Normalizes date columns null-safely.
-9. **Step 8: Cross-Table Pruning** – Prunes sub-tables to match only pediatric primary IDs.
-10. **Step 9: FDA Validation Filter** – Discards unvalidated (`val_vbm = 2`) entries.
-11. **Step 10: RxNorm Drug Mapping** – Normalizes heterogeneous drug strings to standard RxCUI identifiers via the RxNav REST API.
-12. **Step 11: Ordinal Severity Scoring** – Translates categorical outcome codes to an ordinal scale.
-13. **Step 12: Indication Cleaning** – Nullifies non-informative terms (e.g., "unknown indication").
-14. **Step 13: Quality Gate** – Displays a pipeline dashboard preview. **Writes to PostgreSQL are locked until human approval.**
+*(See Supplementary Information S4 Table for full details on this pipeline).*
 
 ---
 
-## 🔮 <span style="color:#007346">Leakage-Free Two-Stage Imputation</span>
+## 🚀 <span style="color:#007346">Core Contribution: The 89.3% Precision Triage Tool</span>
 
-The target label `outc_cod` (Outcome Code) is missing in over 50% of raw FAERS records. To preserve sample sizes, the system uses an intelligent **two-stage clinical imputation pipeline**:
+The primary finding of this research is the operational validation of the machine learning framework as an automated triage tool. While predicting exact 6-class regulatory outcomes is highly noisy due to label ambiguity, the model successfully learns complex clinical patterns to reliably prioritize high-risk cases.
 
-* **Stage 1 (AE-Specific Mode):** Missing values are imputed with the historical modal outcome of that specific adverse event (`pt_term`).
-* **Stage 2 (Clinical Fallback):** Remaining missing outcomes are resolved via seriousness indicators (`is_fatal`, `hosp`, `life_threat`, `disab`) to compute a `severity_proxy` independent of the target.
-
-### 🚫 Target Leakage Resolution
-Leaving the derived `severity_score` in the training data acts as a target-leakage feature (near-deterministic proxy for outcomes), inflating accuracy to $\sim 100\%$. **In this repo, all primary modeling datasets are constructed with the `severity_score` feature strictly removed (13 columns remaining)** to ensure honest, leakage-free predictive metrics.
+In a strict **chronological prospective evaluation** (trained on 2021-2024, tested on genuinely observed 2025 reports):
+* When operating at a **5% review capacity**, the model captured priority cases with **89.7% precision**.
+* When operating at a **20% review capacity**, the model flagged 469 total cases, of which **419 were true serious regulatory outcomes**.
+* This achieves **89.3% precision (419/469)** in prioritizing the top 20% of adverse events, establishing a practical, leakage-controlled pathway for integrating machine learning into modern pharmacovigilance workflows.
 
 ---
 
-## 📊 <span style="color:#0A3A70">Model Benchmarks & Scientific Proof</span>
+## 🔮 <span style="color:#0A3A70">Leakage-Free Validation & Model Benchmarks</span>
 
-We compare two tabular classifiers against a Heterogeneous Attention Network (HANConv) Graph Neural Network:
+### 1. Leakage Quantification (5-Fold CV, XGBoost)
+Directly quantifies the inflation caused by `pt_term`-to-outcome mapping when constructed on the full dataset versus strictly within each training fold:
 
-### 1. Stratified Accuracy (XGBoost Test Set)
+| Approach | Mean Acc | Std Acc | Mean F1 | Std F1 |
+|---|---|---|---|---|
+| **Full-Dataset Mapping** | 0.7531 | 0.0077 | 0.4963 | 0.0610 |
+| **Fold-Internal Mapping** | 0.4633 | 0.0105 | 0.1792 | 0.0063 |
+| **Leakage Inflation** | **+0.2898** | --- | **+0.3171** | --- |
+
+### 2. Stratified Accuracy (XGBoost Test Set)
 Decomposes test-set performance by label source to verify that imputation does not artificially inflate reported metrics:
 
 | Cohort | Overall Acc. | Observed Acc. | Stage 1 (pt_term Mode) | Stage 2 (Fallback) |
@@ -90,29 +83,12 @@ Decomposes test-set performance by label source to verify that imputation does n
 | **Diabetes All** ($N=5{,}208$) | **69.48%** | **58.77%** ($n=587$) | 81.97% ($n=355$) | 88.00% ($n=100$) |
 | **Diabetes Selected 4** ($N=342$) | **66.67%** | **65.96%** ($n=47$) | 28.57% ($n=7$) | 86.67% ($n=15$) |
 
-### 2. Leakage Quantification (5-Fold CV, XGBoost)
-Directly quantifies the inflation caused by `pt_term`-to-outcome mapping when constructed on the full dataset versus strictly within each training fold:
-
-| Approach | Mean Acc | Std Acc | Mean F1 | Std F1 |
-|---|---|---|---|---|
-| **Full-Dataset Mapping** | 0.7531 | 0.0077 | 0.4963 | 0.0610 |
-| **Fold-Internal Mapping** | 0.4633 | 0.0105 | 0.1792 | 0.0063 |
-| **Leakage Inflation** | **+0.2898** | --- | **+0.3171** | --- |
-
-### 3. Complete-Case-Only Anchor (Zero Imputation Circularity)
-Trains and evaluates XGBoost **exclusively** on reports with genuinely observed outcome labels (no imputed data):
-
-* **Obesity All ($N=5{,}768$):** **63.78%** Accuracy | 0.4564 Macro-F1
-* **Obesity Selected 4 ($N=5{,}019$):** **62.35%** Accuracy | 0.5307 Macro-F1
-* **Diabetes All ($N=3{,}039$):** **59.21%** Accuracy | 0.4907 Macro-F1
-* **Diabetes Selected 4 ($N=226$):** **50.00%** Accuracy | 0.3582 Macro-F1
-
 ---
 
 ## 📁 <span style="color:#0A3A70">Repository Structure</span>
 
-* `dataset/14 Columns Model/` – **Primary Predictive Model Data** (leakage-free 13-feature + target outcome format), including separate cohort-specific model training scripts.
+* `dataset/14 Columns Model/` – Primary Predictive Model Data (leakage-free 13-feature + target outcome format).
 * `dataset/15 Columns Leakage/` – Training files containing the leaky `severity_score` feature.
-* `dataset/15 Columns Model with Source Quarter/` – Model datasets including the source quarter tracking.
-* `dataset/16 Columns Leakage with Source Quarter/` – Leakage datasets including the source quarter tracking.
+* `Figures/` – High-resolution export of all generated plots, confusion matrices, and SHAP analyses.
+* `Supplementary_Information/` – Checklists and tabular parameter documentation.
 * `README.md` – Project documentation.
