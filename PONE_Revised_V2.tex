@@ -39,6 +39,12 @@
             urlcolor=jpbiAccent,breaklinks=true]{hyperref}
 \usepackage{xurl} % Allows aggressive URL breaking at hyphens
 \usepackage{float,placeins}
+\usepackage[capitalize,nameinlink]{cleveref}
+\crefname{figure}{Fig}{Figs}
+\Crefname{figure}{Fig}{Figs}
+\crefname{table}{Table}{Tables}
+\crefname{algorithm}{Algorithm}{Algorithms}
+\crefname{section}{Section}{Sections}
 \raggedbottom
  
 %% Allow LaTeX to pack pages tightly with floats
@@ -189,7 +195,7 @@ Nevertheless, disproportionality analysis primarily evaluates aggregated pairwis
 
 Machine learning may provide a complementary analytical layer by integrating these heterogeneous report-level features. Tabular ensemble models such as Random Forest [11] and XGBoost [10] can capture complex multivariable relationships that are not represented in conventional two-by-two contingency tables, while graph-based models have been explored for representing relational dependencies among drugs, adverse events, and patient characteristics [12,14]. Such approaches may generate additional insights regarding combinations of demographic, therapeutic, and reporting factors associated with particular regulatory outcome categories. These insights could support future pharmacovigilance activities such as case prioritisation, targeted follow-up, data-quality review, focused signal assessment, and identification of areas requiring closer clinical monitoring.
 
-The role of machine learning in this context must, however, be distinguished from conventional signal detection: disproportionality evaluates whether an adverse event is reported disproportionately at the population level, whereas the present machine-learning task classifies the reported regulatory outcome category of an individual case using multivariable report-level information. Table~\ref{tab:method_compare} compares the analytical roles, strengths, and limitations of these approaches.
+The role of machine learning in this context must, however, be distinguished from conventional signal detection: disproportionality evaluates whether an adverse event is reported disproportionately at the population level, whereas the present machine-learning task classifies the reported regulatory outcome category of an individual case using multivariable report-level information. \cref{tab:method_compare} compares the analytical roles, strengths, and limitations of these approaches.
 
 \begin{table}[t]
 \caption{Methodological positioning of computational approaches to spontaneous adverse-event report analysis.}
@@ -240,7 +246,7 @@ This study does not seek to develop an operationally autonomous ADR prediction s
 This study uses fully anonymised, publicly available FAERS data released under the FDA's public data policy. No human subjects research was conducted, no intervention was applied, and the authors had no contact with patients or healthcare providers. No identifiable patient information was accessed, processed, or stored. This work is exempt from Institutional Review Board (IRB) oversight under 45\,CFR\,\S\,46.104(d)(4) (secondary research on publicly available, de-identified data). No separate ethical approval was required.
 
 \subsection{Study Overview}
-This study followed a five-part methodological framework designed to evaluate whether machine learning can generate reliable case-level insights that complement conventional pharmacovigilance analysis of spontaneous adverse-event reports. First, FAERS reports were curated, deduplicated, harmonised and transformed into case-level analytical records. Second, the data were partitioned using a chronological design that separated historical model development from future-period evaluation and explicitly controlled outcome-label leakage. Third, conventional disproportionality methods and predictive baseline models were established as reference approaches. Fourth, a leakage-aware XGBoost framework was developed for multiclass classification of reported regulatory outcome categories. Fifth, model performance was evaluated using discrimination, calibration, temporal robustness, class-specific error, explainability and review-prioritisation measures. Together, these stages were intended to address the identified gaps in case-level pharmacovigilance support, outcome-label integrity, temporal reliability, cohort-definition sensitivity and potential operational relevance. The complete workflow is shown in Figure~\ref{fig:framework}.
+This study followed a five-part methodological framework designed to evaluate whether machine learning can generate reliable case-level insights that complement conventional pharmacovigilance analysis of spontaneous adverse-event reports. First, FAERS reports were curated, deduplicated, harmonised and transformed into case-level analytical records. Second, the data were partitioned using a chronological design that separated historical model development from future-period evaluation and explicitly controlled outcome-label leakage. Third, conventional disproportionality methods and predictive baseline models were established as reference approaches. Fourth, a leakage-aware XGBoost framework was developed for multiclass classification of reported regulatory outcome categories. Fifth, model performance was evaluated using discrimination, calibration, temporal robustness, class-specific error, explainability and review-prioritisation measures. Together, these stages were intended to address the identified gaps in case-level pharmacovigilance support, outcome-label integrity, temporal reliability, cohort-definition sensitivity and potential operational relevance. The complete workflow is shown in \cref{fig:framework}.
 
 \begin{figure}[htbp]
 \centering
@@ -280,7 +286,7 @@ Multiple adverse reactions were represented using a multi-hot encoding of all av
 \subsubsection{Stage A--B: Raw-data acquisition, parsing and quality control}
 The seven quarterly file types were parsed using a reproducible data-ingestion pipeline. Variable names, text formats, date formats and missing-value encodings were harmonised across quarters. Columns with more than 90\% missingness or administrative redundancy were excluded when they did not contribute to cohort construction, pharmacovigilance analysis or predictive modelling. The cleaned relational tables were stored in a PostgreSQL database.
 
-The number of columns retained and excluded from each FAERS file type is summarised in Table~\ref{tab:colcounts}.
+The number of columns retained and excluded from each FAERS file type is summarised in \cref{tab:colcounts}.
 
 \begin{table}[htbp]
 \caption{Raw and cleaned column counts for each FAERS file type.}
@@ -374,7 +380,7 @@ Observed and pseudo-labelled outcomes were never treated as equivalent forms of 
 \subsubsection{Predictor definition and direct-leakage audit}
 Candidate predictors were audited according to whether they would be available independently of the target outcome. Variables directly derived from or synonymous with the target were excluded from the primary predictive models.
 
-The complete leakage audit is presented in Table~\ref{tab:leakage_audit}.
+The complete leakage audit is presented in \cref{tab:leakage_audit}.
 
 \begin{table}[htbp]
 \caption{Data-leakage audit of candidate predictors in the FAERS database.}
@@ -433,7 +439,7 @@ The primary model used 13 leakage-audited report-level features:
 \item adverse-event Preferred Term.
 \end{enumerate}
 
-The complete specification and analytical relevance of these variables are presented in Table~\ref{tab:features_spec}.
+The complete specification and analytical relevance of these variables are presented in \cref{tab:features_spec}.
 
 \begin{table}[htbp]
 \caption{Specification and pharmacovigilance relevance of the core clinical variables used in the analytical framework.}
@@ -486,7 +492,7 @@ Because adverse-event Preferred Term was used in one pseudo-label construction r
 \subsubsection{Missing predictor data and feature encoding}
 Missingness was retained as a characteristic of spontaneous-reporting data rather than resolved through complete-case deletion. Missing categorical variables were assigned explicit `Missing'' or `Not Specified'' categories. Continuous variables, including weight and dose amount, were retained with missing values and processed using model-specific missing-value handling.
 
-The extent of missingness and the corresponding preprocessing strategy for each core variable are summarised in Table~\ref{tab:missingness}.
+The extent of missingness and the corresponding preprocessing strategy for each core variable are summarised in \cref{tab:missingness}.
 
 \begin{table}[htbp]
 \caption{Baseline missingness and handling strategies for core clinical features.}
@@ -522,7 +528,7 @@ Categorical variables were encoded within each training partition. Continuous va
 
 For tree-based models, missing continuous values were handled through sparsity-aware split routing [39]. No information from the temporal test period was used to estimate preprocessing parameters.
 
-The complete preprocessing sequence, including per-stage actions, outputs, execution times and rationale, is provided in \hyperref[s4tab]{S4 Table}. The workflow is also summarised visually in Figure~\ref{fig:framework}.
+The complete preprocessing sequence, including per-stage actions, outputs, execution times and rationale, is provided in \hyperref[s4tab]{S4 Table}. The workflow is also summarised visually in \cref{fig:framework}.
 
 \subsection{Dataset Partitioning and Leakage-Controlled Experimental Design}
 Chronological separation, training-only preprocessing and observed-label testing were used to reduce optimistic bias commonly introduced by random splitting and pseudo-label construction. Random-split analyses were retained only as secondary sensitivity experiments.
@@ -706,7 +712,7 @@ The proposed framework integrated:
 
 XGBoost was selected as the principal classifier because it can model nonlinear interactions among heterogeneous tabular variables, incorporate regularisation and route missing values through learned default split directions [10,36].
 
-The complete training and evaluation procedure is summarised in Algorithm~\ref{alg:training}.
+The complete training and evaluation procedure is summarised in \cref{alg:training}.
 
 \begin{algorithm}[H]
 \caption{Leakage-aware tabular model training and evaluation pipeline}
@@ -716,7 +722,7 @@ The complete training and evaluation procedure is summarised in Algorithm~\ref{a
   \item[\textbf{Output:}] Trained XGBoost and Random Forest models, performance metrics.
 \end{description}
 \begin{enumerate}[leftmargin=0.5cm,noitemsep,topsep=2pt,label=\arabic*.]
-  \item Load raw datasets and apply the 13-step pipeline (Figure~\ref{fig:framework}).
+  \item Load raw datasets and apply the 13-step pipeline (\cref{fig:framework}).
   \item Extract the target adolescent cohort (12--17 years).
   \item Apply two-stage pseudo-label generation to resolve missing $Y$.
   \item Encode categorical features using label encoding.
@@ -898,7 +904,7 @@ The Results are organised according to the principal research gaps and analytica
 \subsection{Cohort Construction, Data Quality, and Outcome Availability}
 The raw FAERS files from 2021Q1 through 2025Q4 contained 7,612,804 report records. After application of the four-level version-handling procedure, 6,985,217 deduplicated cases remained. Restriction to adolescents aged 12--17 years yielded 403,278 age-eligible reports. Of these, 11,701 reports contained at least one medicinal product included in the broad obesity-related pharmacotherapy panel.
 
-Within the broad obesity-related panel, 5,768 cases (49.3\%, 5,768/11,701) contained a genuinely reported regulatory outcome, whereas 5,933 cases (50.7\%, 5,933/11,701) required algorithmic pseudo-label assignment. Outcome availability varied between the four pharmacotherapy panels, ranging from 49.3\% to 53.4\%. The complete cohort inclusion, exclusion and missing outcome tracks are presented in Figure~\ref{fig:cohort_flow}.
+Within the broad obesity-related panel, 5,768 cases (49.3\%, 5,768/11,701) contained a genuinely reported regulatory outcome, whereas 5,933 cases (50.7\%, 5,933/11,701) required algorithmic pseudo-label assignment. Outcome availability varied between the four pharmacotherapy panels, ranging from 49.3\% to 53.4\%. The complete cohort inclusion, exclusion and missing outcome tracks are presented in \cref{fig:cohort_flow}.
 
 \begin{figure}[htbp]
 \includegraphics[width=\linewidth]{figs/figure_2.eps}
@@ -906,7 +912,7 @@ Within the broad obesity-related panel, 5,768 cases (49.3\%, 5,768/11,701) conta
 \label{fig:cohort_flow}
 \end{figure}
 
-Quarter-wise report volumes for the complete adolescent population and the four pharmacotherapy panels are presented in Table~\ref{tab:cohort_counts}. The broad obesity-related and selected obesity-related panels contained 11,701 and 10,701 reports, respectively, whereas the broad and selected diabetes-related panels contained 5,208 and 342 reports, respectively.
+Quarter-wise report volumes for the complete adolescent population and the four pharmacotherapy panels are presented in \cref{tab:cohort_counts}. The broad obesity-related and selected obesity-related panels contained 11,701 and 10,701 reports, respectively, whereas the broad and selected diabetes-related panels contained 5,208 and 342 reports, respectively.
 
 %% TABLE 7
 \begin{table}[!t]
@@ -971,7 +977,7 @@ Quarter-wise report volumes for the complete adolescent population and the four 
 
 The mean age across the four panels ranged from 14.50 to 14.63 years. Female reports represented 53.8\%--55.8\% of the cohorts. However, the distribution of medicinal-product roles differed substantially across panels. Concomitant exposure represented 77.15\% of the broad obesity-related panel but only 33.33\% of the selected diabetes-related panel, whereas Primary Suspect reports accounted for 15.05\% and 45.03\%, respectively. These differences indicate that the four panels varied not only in sample size but also in their pharmacovigilance reporting composition.
 
-Missingness was extensive for several report-level predictors. Weight was missing in 64.26\%--80.70\% of reports across the four panels, and dose amount was missing in 42.28\%--45.89\%. Complete clinical and missingness characteristics are summarised in Table~\ref{tab:baseline}.
+Missingness was extensive for several report-level predictors. Weight was missing in 64.26\%--80.70\% of reports across the four panels, and dose amount was missing in 42.28\%--45.89\%. Complete clinical and missingness characteristics are summarised in \cref{tab:baseline}.
 
 %% TABLE 8
 \begin{table}[!t]
@@ -1027,7 +1033,7 @@ Indication (\texttt{indi\_pt}) missing & 18.23\% & 16.88\% & 24.98\% & 39.77\% \
 }
 \end{table}
 
-The proportion of missing regulatory outcomes was 50.71\% in the broad obesity-related panel and 53.41\% in the selected diabetes-related panel. These missing outcomes were assigned pseudo-labels using the two-stage procedure. The Stage 1 procedure, based on the adverse-event Preferred Term, assigned outcomes to the majority of unlabelled cases; Stage 2, based on the reported seriousness criterion, assigned outcomes to the remaining records. The detailed summary of pseudo-label generation is shown in Table~\ref{tab:imputation}.
+The proportion of missing regulatory outcomes was 50.71\% in the broad obesity-related panel and 53.41\% in the selected diabetes-related panel. These missing outcomes were assigned pseudo-labels using the two-stage procedure. The Stage 1 procedure, based on the adverse-event Preferred Term, assigned outcomes to the majority of unlabelled cases; Stage 2, based on the reported seriousness criterion, assigned outcomes to the remaining records. The detailed summary of pseudo-label generation is shown in \cref{tab:imputation}.
 
 %% TABLE 9
 \begin{table}[!t]
@@ -1055,7 +1061,7 @@ Final dataset size & \textbf{11,701} & \textbf{10,701}\\
 \end{tabularx}
 \end{table}
 
-The resulting blended-label datasets were severely imbalanced. \texttt{OT} was the dominant category, representing 59.6\% of the broad obesity-related panel, followed by \texttt{HO} at 31.3\%. \texttt{DE}, \texttt{LT} and \texttt{DS} accounted for 4.5\%, 3.6\% and 1.0\%, respectively, while \texttt{RI} represented only 0.04\%. The full class distributions are presented in Table~\ref{tab:class_dist}.
+The resulting blended-label datasets were severely imbalanced. \texttt{OT} was the dominant category, representing 59.6\% of the broad obesity-related panel, followed by \texttt{HO} at 31.3\%. \texttt{DE}, \texttt{LT} and \texttt{DS} accounted for 4.5\%, 3.6\% and 1.0\%, respectively, while \texttt{RI} represented only 0.04\%. The full class distributions are presented in \cref{tab:class_dist}.
 
 %% TABLE 10
 \begin{table}[!t]
@@ -1098,7 +1104,7 @@ XGBoost provided the most robust predictive signals among the intake-time models
 As detailed in subsequent sections, the model did not reliably discriminate the rare reported outcomes (e.g., distinguishing Death from Life-Threatening events) when forced into a rigid 6-class framework.
 
 \subsubsection{Statistical comparison on the temporal test set}
-To assess the robustness of the primary classification results, we computed 95\% bootstrap confidence intervals for accuracy and Macro-F1 across all models. As shown in Table~\ref{tab:bootstrap_ci}, the XGBoost model achieved an accuracy of 76.16\% (95\% CI: 74.41\%--77.87\%) and a Macro-F1 of 0.6196 (95\% CI: 0.5035--0.6566) within the bootstrapped distributions, demonstrating clear separation from the logistic regression and majority-class baselines.
+To assess the robustness of the primary classification results, we computed 95\% bootstrap confidence intervals for accuracy and Macro-F1 across all models. As shown in \cref{tab:bootstrap_ci}, the XGBoost model achieved an accuracy of 76.16\% (95\% CI: 74.41\%--77.87\%) and a Macro-F1 of 0.6196 (95\% CI: 0.5035--0.6566) within the bootstrapped distributions, demonstrating clear separation from the logistic regression and majority-class baselines.
 
 \begin{table}[htbp]
 \centering
@@ -1118,7 +1124,7 @@ Seriousness Rules & 0.8603 & 0.8462--0.8740 & 0.7326 & 0.7081--0.8995 \\
 \end{tabular}
 \end{table}
 
-Pairwise statistical comparisons using McNemar's test for paired nominal data confirmed that the performance differences between XGBoost and the baselines were highly statistically significant (Table~\ref{tab:mcnemar}). The XGBoost predictions were significantly different from the Majority Class ($\chi^2 = 224.73$, $p < 0.001$), Logistic Regression ($\chi^2 = 225.27$, $p < 0.001$), Decision Tree ($\chi^2 = 201.63$, $p < 0.001$), and Random Forest ($\chi^2 = 35.84$, $p < 0.001$). 
+Pairwise statistical comparisons using McNemar's test for paired nominal data confirmed that the performance differences between XGBoost and the baselines were highly statistically significant (\cref{tab:mcnemar}). The XGBoost predictions were significantly different from the Majority Class ($\chi^2 = 224.73$, $p < 0.001$), Logistic Regression ($\chi^2 = 225.27$, $p < 0.001$), Decision Tree ($\chi^2 = 201.63$, $p < 0.001$), and Random Forest ($\chi^2 = 35.84$, $p < 0.001$). 
 
 \begin{table}[htbp]
 \centering
@@ -1144,7 +1150,7 @@ While these estimates indicate a reproducible and statistically significant rela
 \subsubsection{Operational Utility: Risk Stratification and Triage}
 To evaluate the model's practical utility for pharmacovigilance reviewers, we assessed its performance as an automated triage tool to identify Serious adverse events. Rather than relying on noisy 6-class exact matching, reports were ranked by the model's predicted probability of any serious outcome (Death, Life-Threatening, Hospitalization, Disability, or Required Intervention).
 
-As shown in Table~\ref{tab:triage_metrics}, the model demonstrated highly effective risk-stratification capabilities. In the top 5\% of prioritized cases, 95.7\% (113/118) were genuinely serious outcomes. When extending the threshold to the top 20\% of flagged cases, precision remained robust at 89.3\% (419/469).
+As shown in \cref{tab:triage_metrics}, the model demonstrated highly effective risk-stratification capabilities. In the top 5\% of prioritized cases, 95.7\% (113/118) were genuinely serious outcomes. When extending the threshold to the top 20\% of flagged cases, precision remained robust at 89.3\% (419/469).
 
 \begin{table}[htbp]
 \centering
@@ -1174,10 +1180,10 @@ Performance differed substantially according to whether test outcomes were obser
 
 A similar pattern was observed in the selected obesity-related and broad diabetes-related panels. Observed-label accuracy ranged from 58.77\% to 65.34\% in the three larger panels, whereas Stage 1 pseudo-labelled accuracy generally ranged from 81.97\% to 88.41\%. The selected diabetes-related panel was unstable because only seven Stage 1 pseudo-labelled test cases were available.
 
-The complete stratified results are reported in Table~\ref{tab:stratified_accuracy}.
+The complete stratified results are reported in \cref{tab:stratified_accuracy}.
 
 \begin{table}[htbp]
-\caption{Stratified XGBoost test-set accuracy by label provenance across all four adolescent cohorts (ages 12--17). \emph{Observed} labels represent genuinely recorded FAERS outcomes; \emph{Stage~1} and \emph{Stage~2} labels were imputed by the two-stage pipeline (Section~\ref{sec:imputation}).}
+\caption{Stratified XGBoost test-set accuracy by label provenance across all four adolescent cohorts (ages 12--17). \emph{Observed} labels represent genuinely recorded FAERS outcomes; \emph{Stage~1} and \emph{Stage~2} labels were imputed by the two-stage pipeline (\cref{sec:imputation}).}
 \label{tab:stratified_accuracy}
 \centering\small
 \begin{tabularx}{\textwidth}{|X|c|c|c|c|c|c|c|c|}
@@ -1197,14 +1203,14 @@ Selected Diabetes Panel ($N\!=\!342$) & 66.67\% & 47 & 65.96\% & 7 & 28.57\% & 1
 \end{tabularx}
 \end{table}
 
-As shown in Table~\ref{tab:stratified_accuracy}, performance on pseudo-labelled cases was consistently higher than on observed-label cases, consistent with feature--label circularity introduced by the Stage 1 pseudo-label procedure (Section~\ref{sec:imputation}).
+As shown in \cref{tab:stratified_accuracy}, performance on pseudo-labelled cases was consistently higher than on observed-label cases, consistent with feature--label circularity introduced by the Stage 1 pseudo-label procedure (\cref{sec:imputation}).
 
 \subsubsection{Direct quantification of pseudo-label leakage}
 The five-fold leakage experiment compared a Preferred Term-to-outcome mapping constructed from the full dataset with a mapping constructed separately inside each training fold.
 
 The full-dataset mapping yielded a mean accuracy of 0.7531 and a mean Macro-F1 of 0.4963. When the mapping was restricted to each training fold, mean accuracy decreased to 0.4633 and mean Macro-F1 to 0.1792. The corresponding inflation was +0.2898 in accuracy and +0.3171 in Macro-F1.
 
-These results are presented in Table~\ref{tab:leakage_cv}.
+These results are presented in \cref{tab:leakage_cv}.
 
 \begin{table}[t]
 \centering
@@ -1229,7 +1235,7 @@ This was the clearest evidence that pseudo-label construction substantially infl
 \subsubsection{Complete-case reference analysis}
 As a zero-pseudo-label reference, XGBoost was trained and evaluated exclusively using cases with genuinely observed outcomes. In the broad obesity-related panel, the complete-case random-split analysis achieved a Macro-F1 of 0.4564 and an accuracy of 63.78\%. This was lower than the blended-label Macro-F1 of 0.6250 but remained above the corresponding majority-class baseline.
 
-The complete-case results across all four cohorts are presented in Table~\ref{tab:complete_case}.
+The complete-case results across all four cohorts are presented in \cref{tab:complete_case}.
 
 \begin{table}[htbp]
 \caption{Complete-case-only XGBoost performance on the smaller, non-imputed adolescent subsets. Training and testing are restricted exclusively to reports with genuinely observed \texttt{outc\_cod} (no imputation), providing a zero-circularity reference. Values in brackets represent 95\% confidence intervals.}
@@ -1260,7 +1266,7 @@ To directly determine whether pseudo-labelled historical cases improve future ob
 \end{enumerate}
 Both models were evaluated on the same 2025 observed-label test set.
 
-Table~\ref{tab:temporal_training_config} presents the temporal observed-label performance according to the historical training-label configuration.
+\cref{tab:temporal_training_config} presents the temporal observed-label performance according to the historical training-label configuration.
 
 %% TABLE 20
 \begin{table}[htbp]
@@ -1285,7 +1291,7 @@ Observed + pseudo-labels & 6{,}831 & -- & -- & 0.1800 & 0.05 & 0.04 & 0.37 & 0.0
 
 Random-split analyses were retained to compare the study with conventional retrospective ML evaluation and to quantify the extent of optimism relative to temporal testing. These results are not interpreted as the principal evidence of pharmacovigilance reliability.
 
-As shown in Table~\ref{tab:baselines}, XGBoost achieved the best Macro-F1 among intake-time models under random splitting. The seriousness-rule comparator achieved a higher Macro-F1 of 0.7326, but it used post-outcome seriousness variables and was included only as a diagnostic upper bound.
+As shown in \cref{tab:baselines}, XGBoost achieved the best Macro-F1 among intake-time models under random splitting. The seriousness-rule comparator achieved a higher Macro-F1 of 0.7326, but it used post-outcome seriousness variables and was included only as a diagnostic upper bound.
 
 \begin{table}[t]
 \centering
@@ -1315,7 +1321,7 @@ Seriousness Rules$^{\dagger}$ & 0.7326 & \textbf{0.8603} & \textbf{0.6952} & \te
 Among the prospective intake-time models, XGBoost performed best under the random split. However, the large gap between its random-split Macro-F1 of 0.6250 and its substantially lower temporal observed-label performance demonstrates that retrospective blended-label performance did not generalise to future observed outcomes.
 
 \subsubsection{Performance across pharmacotherapy panels}
-The random-split results for all four cohorts are presented in Table~\ref{tab:main_results}. Performance decreased with smaller sample sizes, and the selected diabetes-related estimate (342 total cases) should be interpreted cautiously.
+The random-split results for all four cohorts are presented in \cref{tab:main_results}. Performance decreased with smaller sample sizes, and the selected diabetes-related estimate (342 total cases) should be interpreted cautiously.
 
 \begin{table}[!t]
 \caption{SECONDARY SENSITIVITY ANALYSIS: Multiclass outcome prediction results based on the blended/imputed label setting with a random stratified split. These results reflect substantial label imputation leakage and do not represent the primary prospective clinical performance.}
@@ -1349,7 +1355,7 @@ Across five random seeds, XGBoost achieved a mean accuracy of 75.60\% $\pm$ 0.93
 
 In the selected diabetes-related panel, XGBoost showed greater instability, with an accuracy of 61.16\% $\pm$ 3.93\% and a Macro-F1 of 0.4216 $\pm$ 0.0604. Random Forest achieved an accuracy of 66.96\% $\pm$ 1.08\% and a Macro-F1 of 0.4379 $\pm$ 0.0453.
 
-The multi-seed results are retained in Table~\ref{tab:multiseed_variance}.
+The multi-seed results are retained in \cref{tab:multiseed_variance}.
 
 \begin{table}[htbp]
 \caption{Robustness analysis showing Mean $\pm$ SD for Accuracy and Macro-F1 across 5 random seeds on the largest (Broad Obesity-Related Panel, $N\!=\!11{,}701$) and smallest (Selected Diabetes Panel, $N\!=\!342$) adolescent cohorts.}
@@ -1373,7 +1379,7 @@ The multi-seed results are retained in Table~\ref{tab:multiseed_variance}.
 The small selected diabetes-related panel did not reproduce the relative XGBoost advantage observed in the broad panel. This finding supports the interpretation that model performance was sensitive to sample size and outcome support.
 
 \subsubsection{Random-split class-specific results}
-The class-specific random-split results for the broad obesity-related and selected diabetes-related panels are presented in Table~\ref{tab:per_class_metrics}.
+The class-specific random-split results for the broad obesity-related and selected diabetes-related panels are presented in \cref{tab:per_class_metrics}.
 
 \begin{table}[t]
 \caption{Secondary random-split evaluation (Seed 42, blended labels): Detailed per-class test set performance for Random Forest (RF) and XGBoost (XGB) on the Broad Obesity-Related Panel ($N_{\text{test}}\!=\!2{,}341$) and Selected Diabetes Panel ($N_{\text{test}}\!=\!69$) cohorts. Class codes: DE (Death), DS (Disability), HO (Hospitalisation), LT (Life-Threatening), OT (Other Serious), RI (Required Intervention).}
@@ -1414,7 +1420,7 @@ The class-specific random-split results for the broad obesity-related and select
 }
 \end{table}
 
-As shown in Table~\ref{tab:per_class_metrics}, random-split class-specific F1-scores were substantially stronger than temporal class-specific performance, particularly for DE and LT, reinforcing the effect of random mixing and pseudo-label construction.
+As shown in \cref{tab:per_class_metrics}, random-split class-specific F1-scores were substantially stronger than temporal class-specific performance, particularly for DE and LT, reinforcing the effect of random mixing and pseudo-label construction.
 
 
 \subsection{Temporal Dataset Shift}
@@ -1424,7 +1430,7 @@ The large reduction from a random-split blended-label Macro-F1 of 0.6250 to the 
 
 \subsubsection{Distributional comparison across reporting periods}
 
-Table~\ref{tab:temporal_distribution} compares the 2021--2023 training period, 2024 validation period and 2025 test period across key reporting characteristics.
+\cref{tab:temporal_distribution} compares the 2021--2023 training period, 2024 validation period and 2025 test period across key reporting characteristics.
 
 %% TABLE 21
 \begin{table}[htbp]
@@ -1487,7 +1493,7 @@ The largest temporal differences were observed for Reporter Type and Target Drug
 
 
 \subsubsection{Temporal evolution of cohort characteristics}
-To visually contextualize the temporal performance decline with changes in the underlying pharmacovigilance data, Figure~\ref{fig:temporal_shift_fig} illustrates the quarterly/yearly evolution of reporting volume, outcome availability, major outcome prevalences, and reporting characteristics from 2021 through 2025.
+To visually contextualize the temporal performance decline with changes in the underlying pharmacovigilance data, \cref{fig:temporal_shift_fig} illustrates the quarterly/yearly evolution of reporting volume, outcome availability, major outcome prevalences, and reporting characteristics from 2021 through 2025.
 
 %% FIGURE 3 (Temporal Shift)
 \begin{figure}[htbp]
@@ -1497,7 +1503,7 @@ To visually contextualize the temporal performance decline with changes in the u
 \label{fig:temporal_shift_fig}
 \end{figure}
 
-This figure directly connects the temporal distribution changes documented in Table~\ref{tab:temporal_distribution} with the resulting deterioration in model performance upon temporal deployment.
+This figure directly connects the temporal distribution changes documented in \cref{tab:temporal_distribution} with the resulting deterioration in model performance upon temporal deployment.
 
 \subsubsection{Statistical Significance and Effect Sizes}
 \label{sec:stats}
@@ -1519,7 +1525,7 @@ Performance differed across the four nested pharmacotherapy panels. The broad ob
 However, because the cohorts overlapped and differed simultaneously in sample size, medicinal-product composition, missingness, drug-role distribution and class support, performance differences cannot be attributed solely to the pharmacological panel.
 
 \subsubsection{Consolidated cohort-sensitivity analysis}
-Table~\ref{tab:cohort_sensitivity} connects cohort composition with predictive performance across the panels. Temporal generalisation was evaluated only in the broad obesity-related panel because the smaller panels did not provide sufficient future-period support for stable six-class estimation.
+\cref{tab:cohort_sensitivity} connects cohort composition with predictive performance across the panels. Temporal generalisation was evaluated only in the broad obesity-related panel because the smaller panels did not provide sufficient future-period support for stable six-class estimation.
 
 %% TABLE 22
 \begin{table}[htbp]
@@ -1549,7 +1555,7 @@ The existing SHAP analysis of the blended random-split XGBoost model identified 
 The dominance of \texttt{pt\_term} in this model should be interpreted primarily as evidence of pseudo-label dependence rather than as evidence that particular adverse-event terms causally determine regulatory outcomes.
 
 \subsubsection{SHAP for the primary temporal observed-label model}
-A separate SHAP analysis was generated for the primary model evaluated on the 2025 observed-label test set to characterise feature reliance in the absence of direct leakage (Figure~\ref{fig:shap_temporal}).
+A separate SHAP analysis was generated for the primary model evaluated on the 2025 observed-label test set to characterise feature reliance in the absence of direct leakage (\cref{fig:shap_temporal}).
 
 \begin{figure}[htbp]
 \centering
@@ -1561,7 +1567,7 @@ A separate SHAP analysis was generated for the primary model evaluated on the 20
 In the primary temporal model, the most influential features were \texttt{pt\_term}, \texttt{weight\_kg}, and \texttt{age\_years}. The relative contribution of \texttt{pt\_term} was lower than in the blended-label model, but it remained the dominant overall predictor. Class-specific SHAP values showed that demographic extremes (\texttt{weight\_kg} and \texttt{age\_years}) contributed most strongly to predictions of RI (Required Intervention), while \texttt{pt\_term} and indication (\texttt{indi\_pt}) most strongly drove DE, DS, and LT predictions. These attributions describe model behaviour and were not interpreted causally.
 
 \subsubsection{Error patterns}
-The temporal confusion matrix (Figure~\ref{fig:cm_temporal}) showed that the model frequently assigned rare observed categories to OT or HO. Death recall was 0.05, life-threatening recall was 0.04 and disability recall was zero. These errors indicate potential under-prioritisation if the model were used without mandatory human review.
+The temporal confusion matrix (\cref{fig:cm_temporal}) showed that the model frequently assigned rare observed categories to OT or HO. Death recall was 0.05, life-threatening recall was 0.04 and disability recall was zero. These errors indicate potential under-prioritisation if the model were used without mandatory human review.
 
 \begin{figure}[!htbp]
 \centering
@@ -1584,7 +1590,7 @@ Conventional disproportionality analysis and machine learning were used to answe
 \label{fig:signal_heatmap}
 \end{figure}
 
-The disproportionality analysis (Figure~\ref{fig:signal_heatmap}), based predominantly on Primary Suspect reports, identified several strong, established reporting signals supported concurrently by all four statistical methods (PRR, ROR, EBGM, and $\mathrm{IC}_{025}$). The strongest signals included:
+The disproportionality analysis (\cref{fig:signal_heatmap}), based predominantly on Primary Suspect reports, identified several strong, established reporting signals supported concurrently by all four statistical methods (PRR, ROR, EBGM, and $\mathrm{IC}_{025}$). The strongest signals included:
 \begin{itemize}
     \item \textbf{Metformin and Lactic acidosis} (PRR\,=\,340.94, $N\,{=}\,172$)
     \item \textbf{Atorvastatin and Myalgia} (PRR\,=\,74.19, $N\,{=}\,59$)
@@ -1594,7 +1600,7 @@ The disproportionality analysis (Figure~\ref{fig:signal_heatmap}), based predomi
 These signals represent reporting patterns indicative of potential safety concerns rather than confirmed aetiological evidence; they carry no strict causal interpretation.
 
 \subsubsection{Integrated ML--disproportionality comparison}
-Table~\ref{tab:ml_disprop_comparison} illustrates where the two analytical streams agreed and differed. This comparison highlights that case-level machine learning provides complementary insight rather than superior signal-detection capability. 
+\cref{tab:ml_disprop_comparison} illustrates where the two analytical streams agreed and differed. This comparison highlights that case-level machine learning provides complementary insight rather than superior signal-detection capability. 
 
 %% TABLE 23
 \begin{table}[htbp]
@@ -1641,7 +1647,7 @@ Top 20\% & 275 & 0.530 & 0.513 & 75 & 65 & 1 & 0 \\
 At a highly constrained review capacity of 5\% ($k=68$), the XGBoost model captured 22.9\% (61/266) of the prespecified priority reports with a precision of 89.7\% (61/68), identifying 54 DE and 7 LT cases. Expanding the capacity to 20\% ($k=275$) captured slightly more than half (53.0\%, 141/266) of the total priority pool. However, even at 20\% capacity, 125 priority cases (including 17 deaths) were not included within the review threshold. These results represent exploratory workflow performance and do not establish safe operational use.
 
 \subsubsection{Probability calibration}
-Because review ranking depends on predicted probability, calibration must be verified to ensure those probabilities are not substantially overconfident or underconfident. Table~\ref{tab:calibration} reports the multiclass Brier scores and Expected Calibration Error (ECE) for the temporal test set.
+Because review ranking depends on predicted probability, calibration must be verified to ensure those probabilities are not substantially overconfident or underconfident. \cref{tab:calibration} reports the multiclass Brier scores and Expected Calibration Error (ECE) for the temporal test set.
 
 %% TABLE 25
 \begin{table}[htbp]
@@ -1668,7 +1674,7 @@ XGBoost & 0.6642 & 0.0701 & Marginally higher ECE than RF; exhibits slight overc
 \label{fig:calibration}
 \end{figure}
 
-While Random Forest provided the lowest expected calibration error (ECE = 0.0527), XGBoost (ECE = 0.0701) exhibited slight overconfidence typical of gradient boosting algorithms. The class-specific reliability plots (Figure~\ref{fig:calibration}) confirm that while the majority outcomes are relatively well-calibrated, predictions for rare outcomes remain noisy and unstable. This reinforces the conclusion that direct probability ranking cannot currently replace human triage.
+While Random Forest provided the lowest expected calibration error (ECE = 0.0527), XGBoost (ECE = 0.0701) exhibited slight overconfidence typical of gradient boosting algorithms. The class-specific reliability plots (\cref{fig:calibration}) confirm that while the majority outcomes are relatively well-calibrated, predictions for rare outcomes remain noisy and unstable. This reinforces the conclusion that direct probability ranking cannot currently replace human triage.
 
 \subsection{Summary of Findings}
 The primary chronological analysis showed that XGBoost provided only a small relative advantage over simpler models when evaluated on genuinely observed 2025 outcomes. Pseudo-label construction substantially inflated apparent performance. Random-split estimates did not persist under chronological observed-label testing, and performance varied across panels with different sample sizes and rare-class support. These combined findings support the methodological conclusion that leakage auditing, observed-label testing, chronological validation and class-specific evaluation are necessary before machine-learning outputs can be interpreted as reliable pharmacovigilance evidence.
@@ -1681,9 +1687,9 @@ Four findings are central.
 
 First, while XGBoost showed limited exact-match accuracy for the 6-class problem, it demonstrated exceptional capability as a binary triage tool. By prioritizing cases based on the probability of any serious outcome, the model achieved nearly 90\% precision (89.3\%, 419/469) in the top 20\% of flagged reports, proving strong operational utility for pharmacovigilance workflow prioritization.
 
-Second, pseudo-label construction substantially inflated apparent performance. Fold-internal pseudo-label construction dramatically reduced Macro-F1 relative to full-dataset mapping (Table~\ref{tab:leakage_cv}), and performance was consistently higher on pseudo-labelled than on observed-label cases (Table~\ref{tab:stratified_accuracy}), demonstrating feature--label circularity.
+Second, pseudo-label construction substantially inflated apparent performance. Fold-internal pseudo-label construction dramatically reduced Macro-F1 relative to full-dataset mapping (\cref{tab:leakage_cv}), and performance was consistently higher on pseudo-labelled than on observed-label cases (\cref{tab:stratified_accuracy}), demonstrating feature--label circularity.
 
-Third, random-split performance did not generalise to chronologically later reports (Section~\ref{sec:temporal_dataset_shift}). Even after restricting the analysis to observed outcomes only, performance declined substantially, indicating that temporal dataset shift was an independent source of optimism beyond pseudo-label leakage.
+Third, random-split performance did not generalise to chronologically later reports (\cref{sec:temporal_dataset_shift}). Even after restricting the analysis to observed outcomes only, performance declined substantially, indicating that temporal dataset shift was an independent source of optimism beyond pseudo-label leakage.
 
 Fourth, model performance was sensitive to cohort definition. The four pharmacotherapy panels differed in sample size, medicinal-product composition, drug-role distribution, outcome missingness and rare-category support. XGBoost performed relatively consistently in the large broad panel under random splitting but became unstable in the selected diabetes-related panel, where only 342 cases were available. These differences demonstrate that apparent model utility cannot be separated from the way the pharmacovigilance cohort is constructed.
 
@@ -1692,15 +1698,15 @@ Collectively, the findings demonstrate that the current model is not ready for i
 \subsection{Outcome-Label Integrity and Pseudo-Label Circularity}
 The most important methodological finding concerns the treatment of missing regulatory outcomes. Approximately half of the reports in the principal cohorts lacked an observed \texttt{outc\_cod}. This degree of target missingness creates a fundamental trade-off. Excluding unlabelled cases reduces sample size and may introduce selection effects, whereas assigning reconstructed outcomes increases the amount of training data but risks introducing artificial relationships between predictors and labels.
 
-The pseudo-label procedure achieved an artificial-masking accuracy of 61.3\% and a Macro-F1 of 0.427 (Section~\ref{sec:imputation}), confirming that nearly four in ten masked outcomes were reconstructed incorrectly.
+The pseudo-label procedure achieved an artificial-masking accuracy of 61.3\% and a Macro-F1 of 0.427 (\cref{sec:imputation}), confirming that nearly four in ten masked outcomes were reconstructed incorrectly.
 
 More importantly, Stage 1 pseudo-labels were assigned using the modal outcome associated with an adverse-event Preferred Term, while the same Preferred Term was retained as a model feature. The resulting sequence was effectively:
 \begin{equation}
 \texttt{pt\_term} \xrightarrow{\text{rule}} \text{pseudo-label (target)} \xleftarrow{\text{training}} \texttt{pt\_term}
 \end{equation}
-Under this design, the classifier could reproduce the label-generation rule rather than learn a generalisable relationship between the independent report characteristics and the observed regulatory outcome. The stratified results support this interpretation: accuracy on Stage 1 pseudo-labelled cases exceeded 80\% in the larger panels, whereas observed-label accuracy remained between approximately 59\% and 65\% under random splitting (Table~\ref{tab:stratified_accuracy}).
+Under this design, the classifier could reproduce the label-generation rule rather than learn a generalisable relationship between the independent report characteristics and the observed regulatory outcome. The stratified results support this interpretation: accuracy on Stage 1 pseudo-labelled cases exceeded 80\% in the larger panels, whereas observed-label accuracy remained between approximately 59\% and 65\% under random splitting (\cref{tab:stratified_accuracy}).
 
-The direct leakage experiment confirmed this: constructing the mapping from the complete dataset inflated Macro-F1 by 0.3171 relative to fold-internal mapping (Table~\ref{tab:leakage_cv}), demonstrating that label reconstruction can dominate apparent predictive performance when label provenance is not explicitly audited.
+The direct leakage experiment confirmed this: constructing the mapping from the complete dataset inflated Macro-F1 by 0.3171 relative to fold-internal mapping (\cref{tab:leakage_cv}), demonstrating that label reconstruction can dominate apparent predictive performance when label provenance is not explicitly audited.
 
 The existing SHAP analysis further supports this interpretation. \texttt{pt\_term} was the dominant feature across most outcome categories in the blended-label model. Rather than establishing that individual adverse-event terms are causal determinants of reported outcomes, this dominance primarily demonstrates that the model learned the pseudo-labeling mechanism. In this context, explainability acted as a model-audit instrument rather than a clinical interpretation tool.
 
@@ -1711,20 +1717,20 @@ Furthermore, the temporal training-label comparison demonstrated that adding tra
 \subsection{Temporal Reliability of Machine Learning in FAERS}
 The temporal evaluation provides the most relevant assessment of whether a model trained on historical spontaneous reports can support analysis of subsequently received cases. Random splitting assumes that the training and test sets are drawn from the same underlying data-generating environment. This assumption is particularly weak for FAERS, where medicinal-product utilisation, regulatory attention, public awareness, reporter composition, coding practices and missingness can change rapidly.
 
-As documented in Section~\ref{sec:temporal_dataset_shift}, the performance decline from random-split to temporal evaluation was substantial even when restricted to observed outcomes only, indicating that the temporal performance loss cannot be attributed solely to pseudo-label construction.
+As documented in \cref{sec:temporal_dataset_shift}, the performance decline from random-split to temporal evaluation was substantial even when restricted to observed outcomes only, indicating that the temporal performance loss cannot be attributed solely to pseudo-label construction.
 
 Several mechanisms may contribute to this temporal non-stationarity. New or rapidly expanding medicinal-product exposures may introduce drug--event combinations that were poorly represented in the historical training data. The relative contribution of healthcare-professional, consumer and manufacturer reports may change over time, affecting terminology, documentation completeness and outcome coding. Regulatory communications, media attention and changes in clinical prescribing may stimulate reporting for selected products or events. Missingness may also vary by period, altering the subset of cases with genuinely recorded outcomes.
 
 These mechanisms are plausible in spontaneous-reporting systems, but the observed performance decline cannot be attributed to any single mechanism on the basis of available evidence. The broad term temporal dataset shift is more appropriate than the more specific terms covariate shift, label shift or concept drift.
 
-The temporal performance decline coincided with substantial changes in drug distribution, reporting role, Preferred Term distribution and feature missingness (Table~\ref{tab:temporal_distribution}), whereas the aggregate outcome distribution remained comparatively stable. This pattern suggests that changes in the predictor distribution and potentially in predictor--outcome relationships contributed to the reduced future-period discrimination.
+The temporal performance decline coincided with substantial changes in drug distribution, reporting role, Preferred Term distribution and feature missingness (\cref{tab:temporal_distribution}), whereas the aggregate outcome distribution remained comparatively stable. This pattern suggests that changes in the predictor distribution and potentially in predictor--outcome relationships contributed to the reduced future-period discrimination.
 
 The practical implication is that a model performing adequately on randomly mixed historical data should not be assumed to remain valid as reporting conditions evolve. Any future ML-supported FAERS workflow would require periodic temporal reassessment, calibration monitoring, drift detection, controlled model updating and version-specific validation.
 
 \subsection{Cohort-Definition Sensitivity and Rare-Outcome Instability}
 The four panels were intentionally constructed to examine whether model performance changed with the definition of the pharmacotherapy cohort. The results indicate that it did. However, the interpretation must remain cautious because the panels were nested and differed across several dimensions simultaneously.
 
-The broad obesity-related panel contained 11,701 reports and provided the greatest overall outcome support. In contrast, the selected diabetes-related panel contained only 342 reports, higher missingness for several predictors and very limited representation of rare outcome categories. Under repeated random splitting, XGBoost performed better than Random Forest in the large broad panel but showed lower mean accuracy and Macro-F1 in the selected diabetes-related panel (Table~\ref{tab:multiseed_variance}). This instability is consistent with insufficient sample size, sparse category support and increased sensitivity to individual train--test allocations.
+The broad obesity-related panel contained 11,701 reports and provided the greatest overall outcome support. In contrast, the selected diabetes-related panel contained only 342 reports, higher missingness for several predictors and very limited representation of rare outcome categories. Under repeated random splitting, XGBoost performed better than Random Forest in the large broad panel but showed lower mean accuracy and Macro-F1 in the selected diabetes-related panel (\cref{tab:multiseed_variance}). This instability is consistent with insufficient sample size, sparse category support and increased sensitivity to individual train--test allocations.
 
 These findings demonstrate cohort-definition sensitivity, not independent generalisability across obesity and diabetes populations, because the panels were nested and overlapping (Section~2.1.3).
 
@@ -1765,7 +1771,7 @@ to:
 An apparently high-performing but circular or temporally unstable model could misdirect case review, overstate confidence in weak patterns or conceal poor identification of rare outcomes. The advance is therefore methodological and governance-oriented rather than algorithmic.
 
 \subsection{Complementary Roles of Disproportionality and Machine Learning}
-As introduced in Section~1, disproportionality and case-level ML address different pharmacovigilance questions. Table~\ref{tab:ml_disprop_comparison} provides concrete examples of their complementarity: drug--event pairs with strong disproportionality signals and consistent high ML outcome probabilities; strong signals for which the ML model showed poor outcome discrimination; and exploratory multivariable case patterns not reflected in threshold-crossing pairwise signals.
+As introduced in Section~1, disproportionality and case-level ML address different pharmacovigilance questions. \cref{tab:ml_disprop_comparison} provides concrete examples of their complementarity: drug--event pairs with strong disproportionality signals and consistent high ML outcome probabilities; strong signals for which the ML model showed poor outcome discrimination; and exploratory multivariable case patterns not reflected in threshold-crossing pairwise signals.
 
 The appropriate future workflow is not ``ML replacing disproportionality.'' A more defensible sequence is:
 \begin{equation}
@@ -1813,9 +1819,9 @@ The principal practical contribution of this study is therefore not an automated
 \subsection{Exploratory Decision Utility}
 A central future-use question is whether a model can concentrate reports of interest within a manageable review fraction. However, operational utility cannot be inferred from accuracy or Macro-F1 alone. It requires evaluation on temporally later, genuinely observed reports using an explicitly defined priority set.
 
-The temporal top-$k$ analysis (Table~\ref{tab:temporal_topk}) provides an initial assessment of review-prioritisation performance. At a 5\% review capacity ($k{=}68$), the model captured 22.9\% (61/266) of priority reports with 89.7\% (61/68) precision, identifying 54 Death and 7 Life-Threatening cases. Expanding the capacity to 20\% ($k{=}275$) captured 53.0\% (141/266) of the total priority pool, but 125 priority reports---including uncaptured Death and Life-Threatening cases---remained outside the review threshold. These results indicate that the model could not safely function as a stand-alone triage mechanism. Even favourable top-$k$ performance should be described as exploratory until validated externally and prospectively.
+The temporal top-$k$ analysis (\cref{tab:temporal_topk}) provides an initial assessment of review-prioritisation performance. At a 5\% review capacity ($k{=}68$), the model captured 22.9\% (61/266) of priority reports with 89.7\% (61/68) precision, identifying 54 Death and 7 Life-Threatening cases. Expanding the capacity to 20\% ($k{=}275$) captured 53.0\% (141/266) of the total priority pool, but 125 priority reports---including uncaptured Death and Life-Threatening cases---remained outside the review threshold. These results indicate that the model could not safely function as a stand-alone triage mechanism. Even favourable top-$k$ performance should be described as exploratory until validated externally and prospectively.
 
-Calibration analysis (Table~\ref{tab:calibration}, Figure~\ref{fig:calibration}) showed that XGBoost exhibited slight overconfidence (ECE~=~0.0701) compared with Random Forest (ECE~=~0.0527). Probability-based prioritisation may therefore require post-hoc recalibration. Even if calibration were acceptable, poor temporal discrimination would prevent calibrated probabilities alone from establishing operational usefulness.
+Calibration analysis (\cref{tab:calibration}, \cref{fig:calibration}) showed that XGBoost exhibited slight overconfidence (ECE~=~0.0701) compared with Random Forest (ECE~=~0.0527). Probability-based prioritisation may therefore require post-hoc recalibration. Even if calibration were acceptable, poor temporal discrimination would prevent calibrated probabilities alone from establishing operational usefulness.
 
 \subsection{Strengths}
 The study has several methodological strengths:
