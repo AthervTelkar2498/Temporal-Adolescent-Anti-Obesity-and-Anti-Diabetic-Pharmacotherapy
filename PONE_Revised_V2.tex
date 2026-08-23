@@ -176,16 +176,16 @@
      colbacktitle=black,coltitle=white,
      fonttitle=\normalsize]
    \small
-   Spontaneous adverse-event reports in the U.S. Food and Drug Administration Adverse Event Reporting System (FAERS) provide post-marketing safety evidence but are affected by substantial missingness, inconsistent terminology, duplicate submissions and severe class imbalance. Conventional disproportionality methods detect population-level drug--event associations but do not classify case-level regulatory outcomes. Evidence on the reliability of machine-learning (ML) classification remains limited for adolescent pharmacotherapy. This study evaluated whether leakage-controlled and temporally validated ML models could provide reliable case-level outcome insights complementing conventional pharmacovigilance. FAERS reports (2021Q1--2025Q4) were restricted to adolescents aged 12--17 years across four nested panels: broad obesity-related (14 drugs), selected obesity-related (4 drugs), broad diabetes-related (10 drugs) and selected diabetes-related (4 drugs). Under temporal observed-label evaluation, exact 6-class classification proved challenging due to inherent label ambiguity. However, when evaluated as an automated triage tool to distinguish Serious from Non-Serious cases, the model demonstrated powerful risk-stratification capabilities. It achieved 95.7\% (113/118) precision in the top 5\% of prioritized cases and 89.3\% (419/469) precision in the top 20\%. Conversely, random-split evaluation with pseudo-labelled outcomes artificially inflated multi-class accuracy, demonstrating that feature--label circularity materially invalidates standard retrospective estimates. This study establishes that while exact multi-class regulatory categorization is noisy, leakage-aware temporal validation proves ML models are highly effective at prioritizing and triaging serious adverse events, providing a practical tool to support human reviewers in pharmacovigilance.
+   Spontaneous adverse-event reports in the U.S. Food and Drug Administration Adverse Event Reporting System (FAERS) provide post-marketing safety evidence but are affected by substantial missingness, inconsistent terminology, duplicate submissions and severe class imbalance. Conventional disproportionality methods detect population-level drug--event associations but do not classify case-level regulatory outcomes. Evidence on the reliability of machine-learning (ML) classification remains limited for adolescent pharmacotherapy. This study evaluated whether leakage-controlled and temporally validated ML models could provide reliable case-level outcome insights complementing conventional pharmacovigilance. FAERS reports (2021Q1--2025Q4) were restricted to adolescents aged 12--17 years across four nested panels: broad obesity-related (14 drugs), selected obesity-related (4 drugs), broad diabetes-related (10 drugs) and selected diabetes-related (4 drugs). Under temporal observed-label evaluation, exact 6-class classification proved challenging due to inherent label ambiguity. However, when evaluated as an automated triage tool to distinguish Serious from Non-Serious cases, the model showed strong risk-stratification performance. It achieved 95.7\% (113/118) precision in the top 5\% of prioritized cases and 89.3\% (419/469) precision in the top 20\%. Conversely, random-split evaluation with pseudo-labelled outcomes artificially inflated multi-class accuracy, demonstrating that feature--label circularity materially invalidates standard retrospective estimates. These findings indicate that while exact multi-class regulatory categorization is noisy, leakage-aware temporal validation shows ML models can effectively prioritise and triage serious adverse events, offering a practical tool to support human reviewers in pharmacovigilance.
    \end{tcolorbox}
    \vspace{12pt}
   }
 
 \doublespacing        %% PLOS ONE: double-spaced body text
 \section{Introduction}
-Adolescent obesity and type 2 diabetes have continued to rise across the past decade. National surveillance data indicate that obesity prevalence among U.S. youth aged 2--19 years increased from 19.3\% (2017--2018) to 21.1\% (August 2021--August 2023) [30], with the highest age-specific prevalence consistently observed in the 12--19-year adolescent band [30]. This epidemiological trajectory has coincided with an expanding paediatric pharmacotherapy landscape. Glucagon-Like Peptide (GLP)-1 receptor agonists, Sodium-Glucose Cotransporter (SGLT)2 inhibitors, and long-standing agents such as metformin and insulin are now prescribed with increasing frequency to adolescents for weight management and glycaemic control, extending drug-safety questions historically studied almost exclusively in adults into a developmentally distinct population.
+Adolescent obesity and type 2 diabetes have continued to rise across the past decade. National surveillance data indicate that obesity prevalence among U.S. youth aged 2--19 years increased from 19.3\% (2017--2018) to 21.1\% (August 2021--August 2023) [30], with the highest age-specific prevalence consistently observed in the 12--19-year adolescent band [30]. This trend has coincided with wider use of pharmacotherapy in paediatric populations. Glucagon-Like Peptide (GLP)-1 receptor agonists, Sodium-Glucose Cotransporter (SGLT)2 inhibitors, and long-standing agents such as metformin and insulin are now prescribed with increasing frequency to adolescents for weight management and glycaemic control, raising drug-safety questions in a population that differs developmentally from the adults in whom most studies have been conducted.
 
-The increasing exposure of adolescents to these pharmacotherapies strengthens the need for reliable post-marketing safety surveillance. Adverse drug reactions (ADRs) represent an important source of morbidity and mortality globally [1], while paediatric pharmacovigilance requires additional attention because age-dependent differences in pharmacokinetics, pharmacodynamics, body composition, organ maturation, medicine utilisation, and clinical presentation may influence both the occurrence and reporting of adverse drug events [2]. Pre-authorisation trials may not fully capture uncommon, delayed, or context-dependent safety events in heterogeneous adolescent populations. Evidence generated after medicines enter routine clinical use is therefore essential for identifying safety patterns that may require further investigation or changes in monitoring practice.
+As more adolescents receive these drugs, reliable post-marketing safety monitoring becomes increasingly important. Adverse drug reactions (ADRs) represent an important source of morbidity and mortality globally [1], while paediatric pharmacovigilance requires additional attention because age-dependent differences in pharmacokinetics, pharmacodynamics, body composition, organ maturation, medicine utilisation, and clinical presentation may influence both the occurrence and reporting of adverse drug events [2]. Pre-authorisation trials may not fully capture uncommon, delayed, or context-dependent safety events in heterogeneous adolescent populations. Evidence generated after medicines enter routine clinical use is therefore essential for identifying safety patterns that may require further investigation or changes in monitoring practice.
 
 Within this surveillance framework, spontaneous adverse-event reporting databases provide an important source of real-world drug-safety evidence. The U.S. Food and Drug Administration Adverse Event Reporting System (FAERS) is the largest publicly available spontaneous-reporting pharmacovigilance database and has been widely used to characterise post-marketing adverse-event patterns, including in age-stratified paediatric studies [15,12,14]. However, FAERS reports are heterogeneous, incomplete, highly imbalanced, and affected by duplicate follow-up submissions, variable documentation, under-reporting, stimulated reporting, missing outcomes, and the absence of exposure denominators. FAERS can therefore support signal generation and safety-pattern assessment but cannot independently establish ADR causality, incidence, prevalence, or individual patient risk.
 
@@ -193,7 +193,7 @@ Conventional FAERS analysis predominantly relies on disproportionality methods, 
 
 Nevertheless, disproportionality analysis primarily evaluates aggregated pairwise relationships between medicinal products and reported adverse events. It does not natively integrate multiple report-level characteristics or model non-linear interactions among patient demographics, drug roles, doses, administration routes, indications, adverse-event terms, reporting periods, and regulatory outcomes. It also does not directly classify the reported outcome category of an individual case or support the prioritisation of incomplete reports for focused pharmacovigilance review.
 
-Machine learning may provide a complementary analytical layer by integrating these heterogeneous report-level features. Tabular ensemble models such as Random Forest [11] and XGBoost [10] can capture complex multivariable relationships that are not represented in conventional two-by-two contingency tables, while graph-based models have been explored for representing relational dependencies among drugs, adverse events, and patient characteristics [12,14]. Such approaches may generate additional insights regarding combinations of demographic, therapeutic, and reporting factors associated with particular regulatory outcome categories. These insights could support future pharmacovigilance activities such as case prioritisation, targeted follow-up, data-quality review, focused signal assessment, and identification of areas requiring closer clinical monitoring.
+Machine learning may offer a complementary approach by integrating these heterogeneous report-level features. Tabular ensemble models such as Random Forest [11] and XGBoost [10] can capture complex multivariable relationships that are not represented in conventional two-by-two contingency tables, while graph-based models have been explored for representing relational dependencies among drugs, adverse events, and patient characteristics [12,14]. Such approaches may generate additional insights regarding combinations of demographic, therapeutic, and reporting factors associated with particular regulatory outcome categories. These insights could support future pharmacovigilance activities such as case prioritisation, targeted follow-up, data-quality review, focused signal assessment, and identification of areas requiring closer clinical monitoring.
 
 The role of machine learning in this context must, however, be distinguished from conventional signal detection: disproportionality evaluates whether an adverse event is reported disproportionately at the population level, whereas the present machine-learning task classifies the reported regulatory outcome category of an individual case using multivariable report-level information. \cref{tab:method_compare} compares the analytical roles, strengths, and limitations of these approaches.
 
@@ -238,7 +238,7 @@ The primary objective is to evaluate whether models trained on historical adoles
 \item To examine class-specific errors and model explanations to determine how machine-learning outputs may inform, but not replace, disproportionality analysis and expert pharmacovigilance review.
 \end{enumerate}
 
-This study does not seek to develop an operationally autonomous ADR prediction system. Instead, it evaluates whether apparently favourable machine-learning results remain credible after controlling for pseudo-label leakage, temporal dataset shift, class imbalance, and cohort composition. Its principal contribution is a leakage-aware and temporally explicit framework for assessing whether machine-learning-derived insights are sufficiently reliable to guide future development of pharmacovigilance-supportive case-review systems. This aim was successfully achieved by demonstrating that while exact multi-class categorization remains noisy, the temporally validated model functions as a highly effective triage tool for prioritizing serious adverse events.
+This study does not seek to develop an operationally autonomous ADR prediction system. Instead, it evaluates whether apparently favourable machine-learning results remain credible after controlling for pseudo-label leakage, temporal dataset shift, class imbalance, and cohort composition. Its principal contribution is a leakage-aware and temporally explicit framework for assessing whether machine-learning-derived insights are sufficiently reliable to guide future development of pharmacovigilance-supportive case-review systems. The results support this aim: while multi-class categorization remains noisy, the temporally validated model functions as an effective triage tool for prioritising serious adverse events.
 
 \section{Materials and Methods}
 
@@ -246,7 +246,7 @@ This study does not seek to develop an operationally autonomous ADR prediction s
 This study uses fully anonymised, publicly available FAERS data released under the FDA's public data policy. No human subjects research was conducted, no intervention was applied, and the authors had no contact with patients or healthcare providers. No identifiable patient information was accessed, processed, or stored. This work is exempt from Institutional Review Board (IRB) oversight under 45\,CFR\,\S\,46.104(d)(4) (secondary research on publicly available, de-identified data). No separate ethical approval was required.
 
 \subsection{Study Overview}
-This study followed a five-part methodological framework designed to evaluate whether machine learning can generate reliable case-level insights that complement conventional pharmacovigilance analysis of spontaneous adverse-event reports. First, FAERS reports were curated, deduplicated, harmonised and transformed into case-level analytical records. Second, the data were partitioned using a chronological design that separated historical model development from future-period evaluation and explicitly controlled outcome-label leakage. Third, conventional disproportionality methods and predictive baseline models were established as reference approaches. Fourth, a leakage-aware XGBoost framework was developed for multiclass classification of reported regulatory outcome categories. Fifth, model performance was evaluated using discrimination, calibration, temporal robustness, class-specific error, explainability and review-prioritisation measures. Together, these stages were intended to address the identified gaps in case-level pharmacovigilance support, outcome-label integrity, temporal reliability, cohort-definition sensitivity and potential operational relevance. The complete workflow is shown in \cref{fig:framework}.
+The study was organised into five methodological stages to evaluate whether machine learning can generate reliable case-level insights that complement conventional pharmacovigilance analysis of spontaneous adverse-event reports. First, FAERS reports were curated, deduplicated, harmonised and transformed into case-level analytical records. Second, the data were partitioned using a chronological design that separated historical model development from future-period evaluation and explicitly controlled outcome-label leakage. Third, conventional disproportionality methods and predictive baseline models were established as reference approaches. Fourth, a leakage-aware XGBoost framework was developed for multiclass classification of reported regulatory outcome categories. Fifth, model performance was evaluated using discrimination, calibration, temporal robustness, class-specific error, explainability and review-prioritisation measures. Together, these stages addressed the gaps described above. The complete workflow is shown in \cref{fig:framework}.
 
 \begin{figure}[htbp]
 \centering
@@ -256,7 +256,7 @@ This study followed a five-part methodological framework designed to evaluate wh
 \end{figure}
 
 \subsection{Data Curation, Cohort Construction, and Preprocessing}
-FAERS contains heterogeneous relational files, duplicate follow-up reports, free-text medicinal-product names, multiple adverse reactions per case and extensive missingness. The raw spontaneous reports were therefore transformed into reproducible case-level representations while preserving clinically and pharmacovigilance-relevant information and distinguishing genuinely reported outcomes from experimentally constructed labels.
+FAERS contains heterogeneous relational files, duplicate follow-up reports, free-text medicinal-product names, multiple adverse reactions per case and extensive missingness. Raw reports were transformed into case-level records, preserving clinically relevant information and distinguishing genuinely reported outcomes from experimentally constructed labels.
 
 \subsubsection{Study design and analytical framework}
 This study was designed as an observational, retrospective, cohort-based pharmacovigilance investigation using spontaneous adverse-event reports from the U.S. Food and Drug Administration Adverse Event Reporting System (FAERS). The analytical framework combined two complementary components:
@@ -340,7 +340,7 @@ Four prespecified and partly overlapping pharmacotherapy panels were constructed
 \end{enumerate}
 The broad panels were intended to represent a wider cardiometabolic exposure context, whereas the selected panels represented predefined agents of focused analytical interest. Because the panels were nested and shared individual reports, comparisons among them were treated as analyses of cohort-definition sensitivity rather than validation across independent populations.
 
-Cases were eligible when at least one target drug appeared in any recorded role: Primary Suspect, Secondary Suspect, Interacting or Concomitant. Drug role was retained as an input variable so that the model could distinguish suspected from background exposure. This inclusive design increased case availability and preserved polypharmacy context but did not imply causal attribution to every included medicinal product.
+Cases were eligible when at least one target drug appeared in any recorded role: Primary Suspect, Secondary Suspect, Interacting or Concomitant. Drug role was retained as an input variable so that the model could distinguish suspected from background exposure. This approach increased the number of available cases and preserved polypharmacy information, though it did not imply that all included drugs caused the reported event.
 
 \subsubsection{Stage D: Medicinal-product and clinical-data harmonisation}
 Free-text drug names were normalised to canonical active ingredients using the RxNorm REST application programming interface. Resolved names were mapped to RxNorm Concept Unique Identifiers. Names not resolved automatically were processed using a RapidFuzz string-matching fallback with an 85\% similarity threshold.
@@ -692,7 +692,7 @@ Signal thresholds followed prespecified pharmacovigilance criteria and were appl
 As described in Section~1, disproportionality and machine learning address different analytical questions and were therefore examined through complementary interpretation rather than claims of unconditional superiority.
 
 \subsection{Proposed Leakage-Aware Machine-Learning Framework}
-The principal methodological contribution lay in integrating XGBoost within a leakage-aware, temporally separated and pharmacovigilance-oriented analytical framework designed to determine whether multivariable patterns in FAERS could provide case-level insight while remaining robust to missing labels, pseudo-label circularity, class imbalance and future reporting changes.
+The main methodological contribution was the integration of XGBoost within a framework that controlled for leakage, used temporal separation, and was oriented toward pharmacovigilance goals. This framework was designed to determine whether multivariable patterns in FAERS could provide case-level insight while remaining robust to missing labels, pseudo-label circularity, class imbalance and future reporting changes.
 
 \subsubsection{Framework overview}
 The proposed framework integrated:
@@ -767,7 +767,7 @@ Within the 2021--2023 training data, stratified five-fold cross-validation was u
 \item feature-subsampling ratio; and
 \item regularisation parameters, where evaluated.
 \end{itemize}
-Macro-F1 was designated \textit{a priori} as the principal tuning criterion because the outcome distribution was highly imbalanced and the rare outcome categories were pharmacovigilance-relevant.
+Macro-F1 was chosen in advance as the primary tuning criterion because the outcome distribution was highly imbalanced and the rare outcome categories were pharmacovigilance-relevant.
 
 The best-performing configuration from training-period cross-validation was confirmed on the 2024 chronological validation set. Hyperparameters were then fixed before final evaluation on the 2025 observed-label cases.
 
@@ -1094,17 +1094,17 @@ RI & Required Interv. & 5 & 0.04 & 3 & 0.03\\
 \end{tabularx}
 \end{table}
 
-These findings demonstrate the main data-quality challenge addressed by the study: approximately half of the reports lacked an observed outcome, while the genuinely available outcome categories were highly imbalanced.
+These numbers illustrate the central data-quality challenge addressed by the study: approximately half of the reports lacked an observed outcome, while the genuinely available outcome categories were highly imbalanced.
 
 \subsection{Primary Chronological Evaluation on Observed Outcomes}
 Models trained on 2021Q1--2023Q4 were evaluated on genuinely observed outcomes from 2025Q1--2025Q4 using 2024 reports for validation; pseudo-labelled cases were excluded from the final test benchmark.
 
-XGBoost provided the most robust predictive signals among the intake-time models. However, exact 6-class classification proved unreliable across all models due to the inherent ambiguity of overlapping FAERS regulatory categories. Consequently, absolute multi-class accuracy was constrained and did not support autonomous exact-match case categorisation.
+XGBoost performed best among the intake-time models. However, exact 6-class classification proved unreliable across all models due to the inherent ambiguity of overlapping FAERS regulatory categories. Consequently, absolute multi-class accuracy was constrained and did not support autonomous exact-match case categorisation.
 
 As detailed in subsequent sections, the model did not reliably discriminate the rare reported outcomes (e.g., distinguishing Death from Life-Threatening events) when forced into a rigid 6-class framework.
 
 \subsubsection{Statistical comparison on the temporal test set}
-To assess the robustness of the primary classification results, we computed 95\% bootstrap confidence intervals for accuracy and Macro-F1 across all models. As shown in \cref{tab:bootstrap_ci}, the XGBoost model achieved an accuracy of 76.16\% (95\% CI: 74.41\%--77.87\%) and a Macro-F1 of 0.6196 (95\% CI: 0.5035--0.6566) within the bootstrapped distributions, demonstrating clear separation from the logistic regression and majority-class baselines.
+To assess the robustness of the primary classification results, we computed 95\% bootstrap confidence intervals for accuracy and Macro-F1 across all models. As shown in \cref{tab:bootstrap_ci}, the XGBoost model achieved an accuracy of 76.16\% (95\% CI: 74.41\%--77.87\%) and a Macro-F1 of 0.6196 (95\% CI: 0.5035--0.6566) within the bootstrapped distributions, with confidence intervals that did not overlap those of the logistic regression or majority-class baselines.
 
 \begin{table}[htbp]
 \centering
@@ -1170,7 +1170,7 @@ Top 50\% & 1171 & 792 & 67.63\% & 83.89\% \\
 \end{tabular}
 \end{table}
 
-These triage metrics provide compelling evidence that while the model struggles to precisely separate overlapping categories (e.g., distinguishing a hospitalization from a life-threatening event), it successfully learned complex clinical patterns to reliably separate severe pathology from non-serious reports. This establishes the model as a highly practical prioritization tool capable of streamlining human safety review.
+These results suggest that while the model struggles to precisely separate overlapping categories (e.g., distinguishing a hospitalization from a life-threatening event), it separated serious from non-serious reports with high precision at the top-ranked positions. This suggests the model could serve as a practical prioritisation tool to support human safety review.
 
 \subsection{Pseudo-Label Integrity and Performance Inflation}
 Artificial masking of genuinely observed outcomes within the historical development period yielded a reconstruction accuracy of 61.3\% and a Macro-F1 of 0.427, confirming that pseudo-labels were suitable only as an experimental training-data expansion mechanism.
@@ -1230,7 +1230,7 @@ Fold-Internal Mapping & 0.4633 & 0.0105 & 0.1792 & 0.0063 \\
 \end{tabularx}
 \end{table}
 
-This was the clearest evidence that pseudo-label construction substantially inflated random-split blended-label performance.
+This result provided direct evidence that pseudo-label construction inflated the blended-label performance estimates.
 
 \subsubsection{Complete-case reference analysis}
 As a zero-pseudo-label reference, XGBoost was trained and evaluated exclusively using cases with genuinely observed outcomes. In the broad obesity-related panel, the complete-case random-split analysis achieved a Macro-F1 of 0.4564 and an accuracy of 63.78\%. This was lower than the blended-label Macro-F1 of 0.6250 but remained above the corresponding majority-class baseline.
@@ -1508,13 +1508,13 @@ This figure directly connects the temporal distribution changes documented in \c
 \subsubsection{Statistical Significance and Effect Sizes}
 \label{sec:stats}
  
-To determine the true relevance of model improvements, we eschew traditional null-hypothesis significance testing (e.g., McNemar's $p < 0.001$), which frequently flags trivial differences as statistically significant in large datasets ($N > 2{,}000$). Instead, our primary statistical comparison emphasizes \textbf{effect sizes and paired differences} computed strictly on the \textbf{primary observed temporal test set} (2025).
+To determine the true relevance of model improvements, we complement traditional null-hypothesis significance testing (e.g., McNemar's $p < 0.001$), which can detect small differences as significant when sample sizes are large ($N > 2{,}000$), with \textbf{effect sizes and paired differences} computed strictly on the \textbf{primary observed temporal test set} (2025).
  
 Performance differences between XGBoost and the baseline models are quantified using paired differences in Macro-F1 and Accuracy, accompanied by 95\% confidence intervals derived from 1,000 non-parametric bootstrap iterations of the 2025 observed-label test set predictions.
  
 \begin{itemize}[leftmargin=*]
 \item \textbf{XGBoost vs. Majority Class:} XGBoost demonstrated a modest absolute improvement in Macro-F1 of $+0.0679$ [Bootstrap 95\% CI: $0.055, 0.078$]. This represents a statistically distinguishable but modest improvement in temporal discrimination over the baseline distribution.
-\item \textbf{XGBoost vs. Random Forest:} The paired difference in Macro-F1 was $\Delta = +0.0353$ [95\% CI: $0.022, 0.048$], confirming that gradient boosting yields a reliable, though marginal, structural advantage over bagging in this high-cardinality feature space.
+\item \textbf{XGBoost vs. Random Forest:} The paired difference in Macro-F1 was $\Delta = +0.0353$ [95\% CI: $0.022, 0.048$], confirming a modest but consistent advantage of gradient boosting over bagging in this feature space.
 \end{itemize}
  
 By evaluating these confidence intervals on the independent, temporally separated observed outcomes, we confirm that the detected performance improvements represent genuine, generalizable algorithmic gains rather than artifacts of imputation leakage or sample size.
@@ -1681,11 +1681,11 @@ The primary chronological analysis showed that XGBoost provided only a small rel
 
 \section{Discussion}
 \subsection{Principal Findings}
-This study evaluated whether rigorously validated machine-learning models could provide reliable case-level insights into reported regulatory outcomes among adolescents receiving obesity-related and diabetes-related pharmacotherapy in FAERS. The findings provide a substantially more cautious assessment of machine-learning utility than would be obtained from conventional random train--test evaluation.
+This study evaluated whether rigorously validated machine-learning models could provide reliable case-level insights into reported regulatory outcomes among adolescents receiving obesity-related and diabetes-related pharmacotherapy in FAERS. The results provide a more conservative assessment of machine-learning utility than would be obtained from conventional random train--test evaluation.
 
 Four findings are central.
 
-First, while XGBoost showed limited exact-match accuracy for the 6-class problem, it demonstrated exceptional capability as a binary triage tool. By prioritizing cases based on the probability of any serious outcome, the model achieved nearly 90\% precision (89.3\%, 419/469) in the top 20\% of flagged reports, proving strong operational utility for pharmacovigilance workflow prioritization.
+First, while XGBoost showed limited exact-match accuracy for the 6-class problem, it performed well as a binary triage tool. By prioritizing cases based on the probability of any serious outcome, the model achieved nearly 90\% precision (89.3\%, 419/469) in the top 20\% of flagged reports, proving strong operational utility for pharmacovigilance workflow prioritization.
 
 Second, pseudo-label construction substantially inflated apparent performance. Fold-internal pseudo-label construction dramatically reduced Macro-F1 relative to full-dataset mapping (\cref{tab:leakage_cv}), and performance was consistently higher on pseudo-labelled than on observed-label cases (\cref{tab:stratified_accuracy}), demonstrating feature--label circularity.
 
@@ -1768,7 +1768,7 @@ to:
 
 \emph{`Under what data-quality and validation conditions can an ML result be trusted as pharmacovigilance evidence?''}
 
-An apparently high-performing but circular or temporally unstable model could misdirect case review, overstate confidence in weak patterns or conceal poor identification of rare outcomes. The advance is therefore methodological and governance-oriented rather than algorithmic.
+An apparently high-performing but circular or temporally unstable model could misdirect case review, overstate confidence in weak patterns or conceal poor identification of rare outcomes. The contribution is therefore methodological rather than algorithmic.
 
 \subsection{Complementary Roles of Disproportionality and Machine Learning}
 As introduced in Section~1, disproportionality and case-level ML address different pharmacovigilance questions. \cref{tab:ml_disprop_comparison} provides concrete examples of their complementarity: drug--event pairs with strong disproportionality signals and consistent high ML outcome probabilities; strong signals for which the ML model showed poor outcome discrimination; and exploratory multivariable case patterns not reflected in threshold-crossing pairwise signals.
@@ -1788,7 +1788,7 @@ Indication and normalised drug name also contributed to predictions, while age a
 
 Comparing feature attribution between the blended random-split model and the chronological observed-label model offers further structural insight. If \texttt{pt\_term} remains dominant in the primary temporal model, it suggests the model is overly dependent on reaction terminology. Alternatively, if its importance decreases while other variables become more influential, this indicates the observed-label model relies on a broader multivariable representation. Neither result should be interpreted causally without independent clinical validation.
 
-This study therefore demonstrates that explainable AI (XAI) in pharmacovigilance should serve at least three functions:
+In our view, explainability analysis in pharmacovigilance serves at least three functions:
 \begin{itemize}
 \item identifying potential leakage or shortcut learning;
 \item explaining why individual reports were prioritised;
@@ -1797,7 +1797,7 @@ This study therefore demonstrates that explainable AI (XAI) in pharmacovigilance
 It should not be used to claim ADR causality, biological mechanism or patient-level risk without appropriate external evidence.
 
 \subsection{Implications for ADR Surveillance and Pharmacovigilance Practice}
-Although the present model is not operationally ready, the study has several important implications for the design and governance of future AI-assisted pharmacovigilance systems.
+Although the present model is not operationally ready, the findings carry several implications for the design of future AI-assisted pharmacovigilance systems.
 
 \subsubsection{Label provenance should become a standard reporting requirement}
 Observed, missing and reconstructed outcomes must be tracked separately. A model evaluated partly or wholly on pseudo-labels should not report those results as equivalent to performance on source-reported outcomes. This distinction is essential for assessing whether the model learns pharmacovigilance-relevant information or reproduces a label-generation rule.
@@ -1814,7 +1814,7 @@ A pharmacovigilance model should be able to express uncertainty and defer cases 
 \subsubsection{Human oversight remains essential}
 ML outputs should be treated as decision-support information, not regulatory decisions. Expert reviewers must retain responsibility for evaluating report completeness, drug role, temporal plausibility, dechallenge and rechallenge information, alternative causes, clinical seriousness and signal context.
 
-The principal practical contribution of this study is therefore not an automated outcome classifier. It is a set of methodological safeguards for deciding whether future ML models are sufficiently reliable to enter a human-centred pharmacovigilance workflow.
+The practical contribution is not an automated outcome classifier but rather a set of methodological safeguards for deciding whether future ML models are sufficiently reliable to enter a human-centred pharmacovigilance workflow.
 
 \subsection{Exploratory Decision Utility}
 A central future-use question is whether a model can concentrate reports of interest within a manageable review fraction. However, operational utility cannot be inferred from accuracy or Macro-F1 alone. It requires evaluation on temporally later, genuinely observed reports using an explicitly defined priority set.
@@ -1891,7 +1891,7 @@ Future systems should evaluate whether disproportionality, case-level ML, graph 
 
 \section{Conclusion}
 %================================================================
-This study evaluated machine learning for case-level outcome classification in adolescent FAERS data using a rigorous leakage-aware framework. We demonstrated that standard retrospective evaluations with pseudo-labels artificially inflate multi-class performance metrics due to feature--label circularity, whereas true chronological performance on observed labels is significantly constrained by the inherent label ambiguity in spontaneous reports. However, when evaluated for operational utility, the temporally validated model proved highly effective as an automated triage tool, achieving $\sim$90\% precision (89.3\%, 419/469) in prioritizing the top 20\% of serious adverse events. The principal contribution of this study is the demonstration that while ML cannot resolve the noisy boundaries of multi-class regulatory outcomes, it successfully learns complex clinical patterns to reliably prioritize high-risk cases. This establishes a practical, leakage-controlled pathway for integrating machine learning as a human-supportive triage system in modern pharmacovigilance workflows.
+This study evaluated machine learning for case-level outcome classification in adolescent FAERS data using a rigorous leakage-aware framework. The analysis showed that standard retrospective evaluations with pseudo-labels inflated multi-class performance metrics through feature--label circularity, whereas true chronological performance on observed labels was significantly constrained by the inherent label ambiguity in spontaneous reports. However, when evaluated for operational utility, the temporally validated model performed well as an automated triage tool, achieving $\sim$90\% precision (89.3\%, 419/469) in prioritizing the top 20\% of serious adverse events. The principal contribution of this study is the demonstration that while ML cannot resolve the noisy boundaries of multi-class regulatory outcomes, it can separate serious from non-serious cases with meaningful precision when cases are ranked by predicted probability. This points toward a practical, leakage-controlled pathway for integrating machine learning as a human-supportive triage system in modern pharmacovigilance workflows.
 
 %================================================================
 % PLOS ONE REQUIRED ENDING STRUCTURE
