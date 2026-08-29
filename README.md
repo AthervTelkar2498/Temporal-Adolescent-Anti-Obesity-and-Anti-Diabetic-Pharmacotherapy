@@ -1,17 +1,20 @@
-# <p align="center"><span style="color:#0A3A70">Machine learning as a pharmacovigilance triage tool for serious adverse events in adolescents: A leakage-aware FAERS study</span></p>
+﻿# <p align="center"><span style="color:#0A3A70">Machine learning as a pharmacovigilance triage tool for serious adverse events in adolescents: A leakage-aware FAERS study</span></p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/PyTorch-2.3-EE4C2C?style=flat-square&logo=pytorch&logoColor=white" alt="PyTorch">
+  <img src="https://img.shields.io/badge/scikit--learn-1.5.0-F7931E?style=flat-square&logo=scikitlearn&logoColor=white" alt="scikit-learn">
+  <img src="https://img.shields.io/badge/XGBoost-2.0.3-189FDD?style=flat-square" alt="XGBoost">
   <img src="https://img.shields.io/badge/License-Educational-007346?style=flat-square" alt="License">
 </p>
 
-This repository contains the verified clinical datasets and machine learning codebase for analyzing and predicting **Adverse Drug Reactions (ADRs)** in adolescent populations (ages 12–17) receiving anti-obesity and anti-diabetic medications. The system utilizes the FDA Adverse Event Reporting System (FAERS) database spanning 20 quarters (2021–2025).
+This repository contains the verified clinical datasets, submission figures, supplementary information and machine learning codebase for analyzing and predicting **Adverse Drug Reactions (ADRs)** in adolescent populations (ages 12–17) receiving anti-obesity and anti-diabetic medications. The system utilizes the FDA Adverse Event Reporting System (FAERS) database spanning 20 quarters (2021–2025).
+
+> **Note:** The manuscript LaTeX source and cover letter are not included in this repository for confidentiality reasons. The compiled manuscript is available upon request from the corresponding author.
 
 ---
 
-## 🛡️ <span style="color:#0A3A70">Copyright & Academic Integrity</span>
+## 📜 <span style="color:#0A3A70">Copyright & Academic Integrity</span>
 
 This system is registered and protected under the **Indian Copyright Office**:
 * **Project Reference ID:** `ANC-031` (PulseTech Framework)
@@ -23,27 +26,27 @@ All source code, custom schemas, pipeline structures, and processed datasets in 
 
 ---
 
-## ⚙️ <span style="color:#0A3A70">The 13-Step Validated Cleaning Pipeline</span>
+## 🔬 <span style="color:#0A3A70">The 13-Step Validated Cleaning Pipeline</span>
 
 To process spontaneous reporting data without signal bias, the framework implements a strict, deterministic **13-step cleaning and normalization pipeline** prior to database ingestion:
 
 ```text
 RAW FAERS ASCII FILES (7 × .txt)
         │
-        ├─► Step 0: Ingestion & Header-Based Schema Auto-Detection
-        ├─► Step 1: Low-Quality Column Filtering (>90% Null Drop)
-        ├─► Step 2: Demographics Deduplication (4-Level Version & Date Tie-Break)
-        ├─► Step 3: Age Unit Normalization (6 units to decimal years)
-        ├─► Step 4: ICH E11 Pediatric Band Assignment (Ages 12-17 = ADOLESCENT)
-        ├─► Step 5: Weight Unit Standardization (Pounds to Kilograms)
-        ├─► Step 6: Pediatric Cohort Extraction (Strict Age Filter Gates)
-        ├─► Step 7: Date Formatting & Partial Date Flags (ISO 8601 formatting)
-        ├─► Step 8: Filter Related Tables to Pediatric (Early join restriction)
-        ├─► Step 9: FDA Validation and Role Code Filtering (Drop invalid / DN role codes)
-        ├─► Step 10: Drug Mapping to RxNorm CUIs (94% API match + 85% fuzzy threshold)
-        ├─► Step 11: Ordinal Severity Scale Construction (DE = 7 down to OT = 1)
-        ├─► Step 12: Clinical Indication Normalization (Non-informative nullification)
-        ▼
+        ├──► Step 0: Ingestion & Header-Based Schema Auto-Detection
+        ├──► Step 1: Low-Quality Column Filtering (>90% Null Drop)
+        ├──► Step 2: Demographics Deduplication (4-Level Version & Date Tie-Break)
+        ├──► Step 3: Age Unit Normalization (6 units to decimal years)
+        ├──► Step 4: ICH E11 Pediatric Band Assignment (Ages 12-17 = ADOLESCENT)
+        ├──► Step 5: Weight Unit Standardization (Pounds to Kilograms)
+        ├──► Step 6: Pediatric Cohort Extraction (Strict Age Filter Gates)
+        ├──► Step 7: Date Formatting & Partial Date Flags (ISO 8601 formatting)
+        ├──► Step 8: Filter Related Tables to Pediatric (Early join restriction)
+        ├──► Step 9: FDA Validation and Role Code Filtering (Drop invalid / DN role codes)
+        ├──► Step 10: Drug Mapping to RxNorm CUIs (94% API match + 85% fuzzy threshold)
+        ├──► Step 11: Ordinal Severity Scale Construction (DE = 7 down to OT = 1)
+        ├──► Step 12: Clinical Indication Normalization (Non-informative nullification)
+        └
    [Step 13: Human-in-the-Loop Approve/Reject Quality Gate] ──► PostgreSQL DB
 ```
 
@@ -51,7 +54,7 @@ RAW FAERS ASCII FILES (7 × .txt)
 
 ---
 
-## 🚀 <span style="color:#007346">Core Contribution: The 89.3% Precision Triage Tool</span>
+## 🏆 <span style="color:#007346">Core Contribution: The 89.3% Precision Triage Tool</span>
 
 The primary finding of this research is the operational validation of the machine learning framework as an automated triage tool. While predicting exact 6-class regulatory outcomes is highly noisy due to label ambiguity, the model successfully learns complex clinical patterns to reliably prioritize high-risk cases.
 
@@ -62,7 +65,7 @@ In a strict **chronological prospective evaluation** (trained on 2021-2024, test
 
 ---
 
-## 🔮 <span style="color:#0A3A70">Leakage-Free Validation & Model Benchmarks</span>
+## 📊 <span style="color:#0A3A70">Leakage-Free Validation & Model Benchmarks</span>
 
 ### 1. Leakage Quantification (5-Fold CV, XGBoost)
 Directly quantifies the inflation caused by `pt_term`-to-outcome mapping when constructed on the full dataset versus strictly within each training fold:
@@ -87,8 +90,34 @@ Decomposes test-set performance by label source to verify that imputation does n
 
 ## 📁 <span style="color:#0A3A70">Repository Structure</span>
 
-* `dataset/14 Columns Model/` – Primary Predictive Model Data (leakage-free 13-feature + target outcome format).
-* `dataset/15 Columns Leakage/` – Training files containing the leaky `severity_score` feature.
-* `Figures/` – High-resolution export of all generated plots, confusion matrices, and SHAP analyses.
-* `Supplementary_Information/` – Checklists and tabular parameter documentation.
-* `README.md` – Project documentation.
+```
+├── Submission_Figures/          # High-resolution EPS + PDF figures for journal submission
+│   ├── Fig1.eps / Fig1.pdf      # Leakage-aware framework diagram
+│   ├── Fig2.eps / Fig2.pdf      # STROBE-compliant cohort flow diagram
+│   ├── Fig3.eps / Fig3.pdf      # SHAP feature importance
+│   ├── Fig4.eps / Fig4.pdf      # Temporal confusion matrix
+│   ├── Fig5.eps / Fig5.pdf      # Disproportionality heatmap
+│   └── Striking_Image.*         # Journal striking image
+├── Supplementary_Information/   # PLOS ONE supporting information
+│   ├── S1_Table_STROBE_Checklist.docx
+│   ├── S2_Table_TRIPOD_AI_Checklist.docx
+│   ├── S3_Table_READUS_PV_Checklist.docx
+│   ├── S4_Table_Pipeline_Specification.docx
+│   ├── S5_Table_Hyperparameter_Search_Space.docx
+│   └── S1_Fig_Cohort_Flow_Diagram.eps
+├── dataset/                     # Cleaned analytical datasets & training scripts
+│   ├── 14 Columns Model/       # Leakage-free 13-feature + target
+│   ├── 15 Columns Leakage/     # With leaky severity_score feature
+│   ├── 15 Columns Model with Source Quarter/
+│   └── 16 Columns Leakage with Source Quarter/
+├── README.md                    # This file
+└── .gitignore                   # Excludes manuscript & cover letter
+```
+
+---
+
+## 📧 <span style="color:#0A3A70">Contact</span>
+
+For questions about this research, access to the manuscript, or collaboration inquiries:
+* **Atherv Telkar** — [ORCID: 0009-0008-6422-7614](https://orcid.org/0009-0008-6422-7614)
+* **Amey Telkar** — [ORCID: 0009-0000-5133-6012](https://orcid.org/0009-0000-5133-6012)
