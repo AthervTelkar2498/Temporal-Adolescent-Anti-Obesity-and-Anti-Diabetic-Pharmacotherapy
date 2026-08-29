@@ -1,0 +1,9 @@
+﻿# Manuscript and cover letter (confidential - not for GitHub)
+*.tex
+*.aux
+*.log
+*.out
+*.pdf
+PLOS_ONE_Cover_Letter.docx
+PONE_Condensed_v7.tex
+PONE_Revised_V2.tex
