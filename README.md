@@ -1,10 +1,12 @@
 # Temporal Adolescent Anti-Obesity and Anti-Diabetic Pharmacotherapy
 
-## Comprehensive Multi-Metric Disproportionality Analysis of Anti-Obesity and Anti-Diabetic Drug Safety in Adolescents Using FAERS Data (2021–2025)
+## Safety of Anti-Obesity and Anti-Diabetic Medications in Adolescents: A Disproportionality Analysis and Machine-Learning Validation from 2021–2025 on the Basis of the FAERS Database
 
 [![PLOS ONE](https://img.shields.io/badge/Journal-PLOS%20ONE-blue)](https://journals.plos.org/plosone/)
 [![FAERS](https://img.shields.io/badge/Data-FDA%20FAERS-green)](https://www.fda.gov/drugs/questions-and-answers-fdas-adverse-event-reporting-system-faers/fda-adverse-event-reporting-system-faers-public-dashboard)
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+
+**Version: V12 (Final Submission)**
 
 ---
 
@@ -18,6 +20,8 @@ Signal detection was performed using four established disproportionality methods
 - **Atorvastatin–Myalgia**: ROR = 16.89 (95% CI: 8.94–31.92), N = 46
 - **Semaglutide–Optic ischaemic neuropathy**: ROR = 439.23 (95% CI: 99.33–1942.26), N = 14
 - **Dapagliflozin–Cardiac failure**: ROR = 40.24 (95% CI: 22.90–70.71), N = 30
+- **Empagliflozin–Interstitial lung disease**: ROR = 475.55, N = 4
+- **Tirzepatide–Intestinal obstruction**: ROR = 106.50, N = 4
 
 ---
 
@@ -38,7 +42,7 @@ Signal detection was performed using four established disproportionality methods
 │   └── 16 Columns Leakage with Source Quarter/
 ├── Submission_Figures/
 │   ├── Fig1_Flowchart.png/eps       # STROBE-compliant study flowchart
-│   ├── Fig2_SOC_Distribution.png/eps # SOC-level AE bar chart
+│   ├── Fig2_SOC_Distribution.png/eps # SOC-level AE bar chart (23 categories)
 │   ├── Fig3_Forest_Metformin_Atorvastatin.png  # Forest plot (a,b)
 │   ├── Fig3_Forest_Semaglutide.png  # Forest plot (c)
 │   ├── Fig4_Forest_Dapagliflozin_Glargine.png  # Forest plot (a,b)
@@ -77,6 +81,23 @@ Signal detection was performed using four established disproportionality methods
 | Broad Diabetes (10 drugs) | Metformin, dapagliflozin, insulin (aspart, regular, lispro, glargine), semaglutide, empagliflozin, tirzepatide | 5,208 |
 | Selected Diabetes (4 drugs) | Semaglutide, empagliflozin, tirzepatide, dapagliflozin | 342 |
 
+### Individual Drug Report Counts (Combined Panels)
+
+| Drug | N (reports) |
+|------|-------------|
+| Metformin | 7,081 |
+| Atorvastatin | 3,163 |
+| Lisinopril | 2,529 |
+| Losartan | 1,681 |
+| Dapagliflozin | 608 |
+| Insulin Aspart | 346 |
+| Insulin Regular | 341 |
+| Insulin Lispro | 287 |
+| Insulin Glargine | 283 |
+| Semaglutide | 279 |
+| Empagliflozin | 145 |
+| Tirzepatide | 130 |
+
 ### Signal Detection Methods
 
 | Method | Criteria |
@@ -97,16 +118,27 @@ Signal detection was performed using four established disproportionality methods
 
 ## Key Findings
 
-### Strongest Disproportionality Signals
+### Strongest Disproportionality Signals (ROR, Verified from Raw Data)
 
 | Drug | Adverse Event (PT) | N | ROR | 95% CI |
 |------|-------------------|---|-----|--------|
-| Metformin | Lactic acidosis | 214 | 61.22 | 25.21–148.68 |
+| Empagliflozin | Interstitial lung disease | 4 | 475.55 | 52.82–4281.55 |
 | Semaglutide | Optic ischaemic neuropathy | 14 | 439.23 | 99.33–1942.26 |
+| Empagliflozin | Hepatic function abnormal | 6 | 361.77 | 72.38–1808.09 |
+| Empagliflozin | Rash papular | 6 | 241.17 | 59.71–974.02 |
+| Dapagliflozin | Nephrotic syndrome | 6 | 162.46 | 19.53–1351.58 |
+| Dapagliflozin | Nephritis | 4 | 107.95 | 12.05–967.28 |
+| Tirzepatide | Intestinal obstruction | 4 | 106.50 | 28.27–401.26 |
+| Insulin Glargine | Oedema | 6 | 90.01 | 25.26–320.75 |
+| Dapagliflozin | Body mass index increased | 7 | 63.28 | 16.32–245.30 |
+| Metformin | Lactic acidosis | 214 | 61.22 | 25.21–148.68 |
 | Dapagliflozin | Cardiac failure | 30 | 40.24 | 22.90–70.71 |
+| Tirzepatide | Suicidal ideation | 4 | 38.02 | 12.34–117.09 |
+| Tirzepatide | Pancreatitis | 6 | 33.78 | 13.57–84.08 |
 | Atorvastatin | Myalgia | 46 | 16.89 | 8.94–31.92 |
-| Atorvastatin | Drug-induced liver injury | 38 | 16.70 | 8.56–32.59 |
-| Dapagliflozin | Ketoacidosis | 10 | 9.72 | 4.88–19.37 |
+| Atorvastatin | Drug-induced liver injury | 38 | 16.70 | 8.31–33.56 |
+| Insulin Aspart | Blood glucose increased | 26 | 10.95 | 7.07–16.96 |
+| Dapagliflozin | Ketoacidosis | 10 | 9.72 | 4.70–20.10 |
 
 ### Demographics
 - **Sex**: ~54% female predominance across all panels
@@ -187,9 +219,10 @@ This study used publicly available, de-identified data from the FAERS database. 
 If you use this dataset or methodology, please cite:
 
 ```
-Telkar A, et al. Comprehensive Multi-Metric Disproportionality Analysis of 
-Anti-Obesity and Anti-Diabetic Drug Safety in Adolescents Using FAERS Data 
-(2021–2025). PLOS ONE. 2025. [Submitted]
+Telkar A, Telkar A, Javalgikar A, Madanwale N, Ruikar D, Baligar P. 
+Safety of anti-obesity and anti-diabetic medications in adolescents: 
+A disproportionality analysis and machine-learning validation from 
+2021–2025 on the basis of the FAERS database. PLOS ONE. 2025. [Submitted]
 ```
 
 ---
@@ -200,4 +233,4 @@ This work is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/
 
 ## Contact
 
-For questions about this repository, please open an issue or contact the corresponding author.
+For questions about this repository, please open an issue or contact the corresponding authors.
