@@ -54,9 +54,9 @@ This repository contains the full data pipeline, reproducible code, manuscript, 
 ```
 faers-pediatric-adr/
 ├── manuscript/                         ← PLOS ONE submission package
-│   ├── PONE_Condensed_V17.pdf          ← Final manuscript PDF (25 pages)
-│   ├── PONE_Condensed_V17.tex          ← LaTeX source
-│   ├── PONE_Condensed_V17.docx         ← Word version
+│   ├── PONE_Condensed_V17_FINAL.pdf          ← Final manuscript PDF (25 pages)
+│   ├── PONE_Condensed_V17_FINAL.tex          ← LaTeX source
+│   ├── PONE_Condensed_V17_FINAL.docx         ← Word version
 │   ├── PLOS_ONE_Cover_Letter_Corrected.docx
 │   ├── Figures/                        ← All figures (EPS + PNG)
 │   │   ├── Fig1.{eps,png}              ← FAERS report flow
