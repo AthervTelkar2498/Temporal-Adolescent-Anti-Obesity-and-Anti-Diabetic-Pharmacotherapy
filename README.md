@@ -1,134 +1,151 @@
-﻿# FAERS Pediatric ADR — Adolescent Adverse Drug Event Analysis (2021–2025)
+# PLOS ONE submission package — V18 FINAL COMPLETE
 
-[![PLOS ONE Submission](https://img.shields.io/badge/Journal-PLOS%20ONE-brightgreen)](https://journals.plos.org/plosone/)
-[![XGBoost](https://img.shields.io/badge/XGBoost-3.2.0-orange)](https://xgboost.readthedocs.io/)
-[![Python](https://img.shields.io/badge/Python-3.11-blue)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+**Manuscript:** Safety of anti-obesity and anti-diabetic medications in adolescents:
+A disproportionality analysis and machine-learning validation from 2021–2025 on the
+basis of the FAERS database
 
-## Overview
+Telkar A, Telkar A, Javalgikar A, Madanwale N, Ruikar D, Baligar P.
 
-This repository contains the full data pipeline, reproducible code, manuscript, figures, and supporting materials for our PLOS ONE submission:
-
-> **"Adverse Drug Event Profiling for Adolescent Anti-Obesity and Anti-Diabetic Medications Using FAERS (2021–2025): A Multi-Metric Disproportionality Analysis with Complementary Machine Learning Outcome Classification"**
->
-> Atherv Telkar, Amey Telkar, Akshay Javalgikar, Nitin Madanwale, Darshan Ruikar, Preethi Baligar
+> **V18 supersedes V17.** The substantive change in V18 is a corrected Table 4 outcome
+> block. See `PROVENANCE_TABLE4.md` — read that before citing any outcome count.
 
 ---
 
-## Key Results
+## What changed in V18
 
-### Primary Analysis — Signal Detection (FAERS 2021Q1–2025Q4)
-
-| Metric | Value |
-|--------|-------|
-| Raw FAERS records | 7,612,804 |
-| Adolescent reports (12–17 yrs) | 403,278 |
-| Obesity-related panel | 11,701 reports (14 drugs) |
-| Diabetes-related panel | 5,208 reports (10 drugs) |
-| Drug-event pairs evaluated | **2,098** |
-| ROR signals (N≥3, 95% CI lower >1) | **360** |
-| Four-metric concordant signals | **105** |
-
-**Key pharmacovigilance signals:**
-- Metformin → Lactic Acidosis (ROR = 61.22, 95% CI 25.21–148.68)
-- Semaglutide → Optic Ischaemic Neuropathy (ROR = 439.23) — 4-metric concordant
-- Dapagliflozin → Cardiac Failure (ROR = 40.24)
-- Atorvastatin → Myalgia (ROR = 16.89)
-
-### Secondary Analysis — XGBoost Outcome Classification
-
-| Model | Temporal Macro-F1 | Random-split |
-|-------|------------------|--------------|
-| **XGBoost (13 features)** | **0.389** (95% CI 0.353–0.434) | **0.629** |
-| PT-only lookup | 0.594 ← outperforms XGBoost | — |
-| Decision Tree | 0.298 | — |
-| Random Forest | 0.267 | 0.563 |
-| Logistic Regression | 0.172 | — |
-
-> ℹ️ PT-lookup outperforms XGBoost because ~50% of outcome labels were imputed from the Preferred Term, which is also model feature 13. This is disclosed as a limitation. XGBoost significantly outperforms all other learned baselines (McNemar p<0.001).
+| # | Change | Evidence |
+|---|---|---|
+| 1 | **Table 4 outcome distribution corrected** in all four panels | `PROVENANCE_TABLE4.md` |
+| 2 | Outcome-missingness range corrected to **33.9–53.1%** (was 45.9–51.3%) in Methods, Results and Discussion | recomputed from the analytic datasets |
+| 3 | Table 4 note moved **below** the table and rewritten to match the pipeline | PLOS: legends/footnotes below tables |
+| 4 | Reference [30] — an unsupported concordance claim **removed** | S8: ataxia and areflexia absent; rhabdomyolysis ROR 0.77 and muscular weakness ROR 0.76 are non-signals |
+| 5 | Data Availability rewritten — no longer claims the disproportionality source code is public | the code is genuinely not in the package |
+| 6 | Ethics statement expanded to a detailed non-exemption rationale | no regulation invented |
+| 7 | Abstract reduced to **296 words** (PLOS limit 300) | recounted from the compiled PDF |
+| 8 | S2 and S7 updated to the verified final ML metrics; three obsolete values replaced throughout the SI | `code/results_temporal.json` |
+| 9 | The four disproportionality formulae are now **Word equation objects** | PLOS equation policy |
+| 10 | Duplicate code copies consolidated; private absolute filesystem paths removed | see below |
 
 ---
 
-## Repository Structure
+## Verified results — do not alter without re-deriving
 
-```
-faers-pediatric-adr/
-├── manuscript/                         ← PLOS ONE submission package
-│   ├── PONE_Condensed_V17_FINAL.pdf          ← Final manuscript PDF (25 pages)
-│   ├── PONE_Condensed_V17_FINAL.tex          ← LaTeX source
-│   ├── PONE_Condensed_V17_FINAL.docx         ← Word version
-│   ├── PLOS_ONE_Cover_Letter_Corrected.docx
-│   ├── Figures/                        ← All figures (EPS + PNG)
-│   │   ├── Fig1.{eps,png}              ← FAERS report flow
-│   │   ├── Fig2.{eps,png}              ← SOC-level AE distribution
-│   │   ├── Fig3.{eps,png}              ← Forest plot top signals
-│   │   ├── Fig4.{eps,png}              ← Temporal reporting trends
-│   │   ├── S1_Fig_Detailed_Flowchart.{eps,png}
-│   │   └── S2_Fig_SHAP_Importance.{eps,png}
-│   ├── Code_Reproducibility/           ← ✅ All code with proof
-│   │   ├── README.md                   ← How to reproduce
-│   │   ├── train_temporal.py           ← XGBoost temporal pipeline
-│   │   ├── results_temporal.json       ← Reproducible results (XGB 3.2.0)
-│   │   ├── compute_pseudo.py           ← Pseudo-labelling (2-stage)
-│   │   ├── phase2_baselines_temporal.py ← Baseline comparators
-│   │   └── regen_figs.py              ← Figure generation
-│   ├── exploratory/                    ← ML evaluation (not-in-primary-analysis note)
-│   │   ├── README.md
-│   │   ├── train_temporal.py
-│   │   └── results_temporal.json
-│   └── Supporting_Documents/
-│       ├── S1_Table_STROBE_Checklist.docx
-│       ├── S3_Table_READUS_PV_Checklist.docx
-│       ├── S4_Table_Pipeline_Specification.docx
-│       ├── S8_Table_Complete_Signal_Detection_FULL.xlsx  ← 2,098 pairs
-│       └── S9_Table_Quarterly_Reporting_Volume.docx
-├── backend/                            ← FastAPI + signal detection pipeline
-├── frontend/                           ← React dashboard
-└── README.md
-```
+**Signal detection** (all three verified against `Supporting_Documents/S8_Table_Complete_Signal_Detection_FULL.xlsx`)
+
+| Quantity | Value |
+|---|---|
+| Drug–event pairs evaluated (N ≥ 2) | 2,098 |
+| Met ROR criteria (N ≥ 3, CI lower bound > 1) | 360 |
+| Concordant across all four metrics | 105 |
+| Pairs with a two-decimal rounding note | 13 |
+
+Raw FAERS records 7,612,804 → deduplicated 6,985,217 → adolescent (12–17 y) 403,278.
+
+**Machine learning** (XGBoost 3.2.0, seed 42, train-only preprocessing; reproduced from `code/results_temporal.json`)
+
+| | Macro-F1 |
+|---|---|
+| Preferred-Term-only lookup (no model at all) | **0.594** (95% CI 0.545–0.626) |
+| XGBoost, all 13 features, temporal 2025 test (N = 2,812) | 0.389 (95% CI 0.353–0.434) |
+| XGBoost with `pt_term` removed | 0.222 |
+| Random-split XGBoost (leakage-preserving, comparison only) | 0.629 |
+| Random-split Random Forest | 0.563 |
+| Six-class sensitivity analysis (RI as zero-support class) | 0.324 |
+
+Required Intervention has **zero** test support in 2025, so its F1 is undefined; the
+headline figure is the five-class Macro-F1. The lookup beats the model
+(McNemar b = 134, c = 453, χ² = 172.27, p = 2.4 × 10⁻³⁹) because roughly half the
+outcome labels were reconstructed from `pt_term`, which is also model feature 13.
+The case-level results describe how outcome labels relate to reported event terms in
+FAERS; they are **not** evidence of independent predictive capability.
 
 ---
 
-## Reproducibility
+## Repository archive
 
-### Signal Detection (Primary)
-Signal detection is computed from raw FAERS contingency tables — completely independent of ML. See `manuscript/Code_Reproducibility/regen_figs.py` and `manuscript/Supporting_Documents/S8_Table_Complete_Signal_Detection_FULL.xlsx`.
+**Concept DOI (stable citation target, always resolves to the newest version):**
+`10.5281/zenodo.22767355`
 
-### ML Classification (Secondary)
-```bash
-pip install xgboost==3.2.0 scikit-learn pandas openpyxl numpy shap
-python manuscript/Code_Reproducibility/train_temporal.py
-```
+Version DOIs: V17.1 `10.5281/zenodo.22767981`, V17.0 `10.5281/zenodo.22767356`.
 
-Expected output: `results_temporal.json` with temporal Macro-F1 = **0.389**
+> **V17.1 predates the V18 corrections.** It is not the final manuscript version.
+> Cite the **concept DOI** for a general archive reference. A new Zenodo version should
+> be deposited once V18 is finalised; no V18 DOI exists yet and none is quoted anywhere
+> in this package.
 
-### Pseudo-Labelling Provenance
-```bash
-python manuscript/Code_Reproducibility/compute_pseudo.py
-```
-Stage 1: PT-mode fill (outcome imputed from most-frequent outcome for that Preferred Term)
-Stage 2: Overall-mode fill (remaining missing filled with dataset mode)
+A GitHub repository was previously referenced in the Data Availability statement. At the
+time this package was assembled that URL did **not** resolve publicly, so it has been
+removed from the manuscript. Only the Zenodo concept DOI is cited. Restore a GitHub URL
+only after confirming the repository is public.
 
 ---
 
-## Data Availability
+## What is and is not reproducible from this package
 
-FAERS quarterly ASCII files are publicly available from the U.S. FDA:
-https://fis.fda.gov/extensions/FPD-QDE-FAERS/FPD-QDE-FAERS.html
+| Component | Status |
+|---|---|
+| Temporal ML evaluation, baselines, McNemar, bootstrap CIs | runs end to end from the shipped data |
+| Figures 1, 3, 4 and S1 Fig | `code/regen_figs.py` |
+| Signal-detection results (S8 workbook) | shipped as output |
+| ROR / PRR / IC / EBGM **computation code** | **not in this package** — only the S8 output |
+| Pseudo-labelling (`compute_pseudo.py`) | needs `FAERS_Pediatric_ML_Dataset.xlsx`, not shipped |
+| Seriousness-rule baseline (`phase2_baselines_temporal.py`) | needs `ObesityAll_14_Drugs_Adolescent_48cols.xlsx`, not shipped; contains absolute local paths |
+| Fig 2 | needs the licensed MedDRA PT→SOC mapping |
+| S2 Fig (SHAP) | needs the trained model object |
+
+The scripts inside `Obesity Drugs & Diabetic Drugs & MEDRA/*.zip` perform a **random
+80/20 split**, not a temporal one, and fit encoders and scaler on the full dataset before
+splitting. They are retained as the historical record of what produced the results
+workbook. `code/train_temporal.py` is the corrected implementation.
 
 ---
 
-## Authors
+## MedDRA
 
-| Author | Institution | Role |
-|--------|-------------|------|
-| **Atherv Telkar** | MIT Vishwaprayag University | Conceptualization, Software, Analysis |
-| **Amey Telkar** | MIT Vishwaprayag University | Conceptualization, Software, Analysis |
-| Akshay Javalgikar | MIT Vishwaprayag University | Investigation, Validation |
-| Nitin Madanwale | MIT Vishwaprayag University | Investigation, Validation |
-| Darshan Ruikar | MIT Vishwaprayag University | Data Curation, Supervision |
-| Preethi Baligar | MIT Vishwaprayag University | Methodology, Supervision |
+Adverse events were coded to Preferred Terms by the FDA using the MedDRA version current
+at each quarterly extract. **MedDRA version 28.1** was used by the authors to map those
+PTs to primary System Organ Class and HLGT.
+
+MedDRA is licensed by the MSSO. **No MedDRA distribution file is published in the public
+repository or the Zenodo archive**, and MedDRA is not available from this project.
+Reproducing the exact SOC mapping requires your own MedDRA licence from the MSSO.
+The local master ZIP retains the licensed MedDRA archive for the owner's own records
+only; it is excluded from every public artefact.
 
 ---
 
-*Last updated: September 2026 | XGBoost 3.2.0 | Python 3.11 | PLOS ONE under review*
+## Package layout
+
+- `PONE_Condensed_V18_FINAL.tex` / `.pdf` — manuscript source and compiled PDF (27 pages,
+  0 errors, 0 undefined references)
+- `PONE_Condensed_V18_FINAL_EDITABLE.docx` — editable Word manuscript, synchronised with
+  the TEX (27 pages, 5 real Word tables, 4 Word equation objects, continuous line
+  numbering, page numbers, no page images, no LaTeX leakage)
+- `PLOS_ONE_Cover_Letter_Corrected.docx` — no placeholders remaining
+- `Figures/` — Fig 1–4 and S1/S2 Fig as EPS (submission) and PNG (preview, all 300 DPI)
+- `Supporting_Documents/` — S1–S9
+- `code/` — the single authoritative code location
+- `PROVENANCE_TABLE4.md`, `V18_AUDIT_REPORT.md`, `MANIFEST.md`, `PUBLIC_GITHUB_TREE.md`
+- `Obesity Drugs & Diabetic Drugs & MEDRA/` — analytic dataset variants (**local only**)
+- `PLOSNE Guidelines/`, `Formatting Documents PLOSONE/`, `Adolsence Paper/` — reference
+  material used during preparation (**local only**, not for publication)
+
+Funding and competing-interest statements are entered in the submission system:
+
+- Financial Disclosure: "The author(s) received no specific funding for this work."
+- Competing Interests: "The authors have declared that no competing interests exist."
+
+---
+
+## Signal-detection criteria
+
+| Metric | Criterion |
+|---|---|
+| ROR | 95% CI lower bound > 1 and N ≥ 3 |
+| PRR | PRR ≥ 2, χ² ≥ 4, N ≥ 3 |
+| IC | IC₀₂₅ > 0 |
+| EBGM | EB05 ≥ 2 |
+
+The EBGM prior hyperparameters (α₁ = 0.2, β₁ = 0.06; α₂ = 1.4, β₂ = 1.8; w = 0.1) were
+**fixed** rather than estimated by maximum likelihood — a simplification of the original
+GPS procedure, stated in the manuscript.
